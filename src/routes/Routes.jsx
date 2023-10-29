@@ -10,21 +10,33 @@ import Medicinas from "../pages/medicina/Medicinas";
 import VoluntSanitario from "../pages/usuario/components/VoluntSanitario";
 import VoluntAdministrador from "../pages/usuario/components/VoluntAdministrador";
 import Socio from "../pages/usuario/components/Socio";
+import InventarioAlimento from "../pages/almacen/components/InventarioAlimento";
+import InventarioMedicina from "../pages/almacen/components/InventarioMedicina";
+import Login from "../pages/auth/Login";
 
 
 
 const routes = (
     <> 
+
+        <Route path="/login" element={<Login/>}/>
+
         <Route path="/" element={<Layout />}>
+
           <Route index path="/home" element={<Home/>}/>
           <Route path="/usuario" element={<Users/>}/>
           <Route path="/usuario/sanitarios" element={<VoluntSanitario/>}/>
           <Route path="/usuario/administradores" element={<VoluntAdministrador/>}/>
           <Route path="/usuario/socios" element={<Socio/>}/>
 
+
           <Route path="/sede" element={<Sedes/>}/>
           <Route path="/envio" element={<Envios/>}/>
+
           <Route path="/almacen" element={<Almacenes/>}/>
+          <Route path="/almacen/inventarioAlimento" element={<InventarioAlimento/>}/>
+          <Route path="/almacen/inventarioMedicina" element={<InventarioMedicina/>}/>
+
           <Route path="/alimento" element={<Alimento/>}/>
           <Route path="/medicina" element={<Medicinas/>}/>
         </Route>
