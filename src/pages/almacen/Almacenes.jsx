@@ -8,6 +8,9 @@ import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import { Link } from "react-router-dom";
 import api from "../../api/axios";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faAppleWhole, faBriefcaseMedical } from "@fortawesome/free-solid-svg-icons";
+
 
 
 
@@ -137,10 +140,11 @@ function Almacenes() {
                 <td>{almacen.sede.sedeId}</td>
                 <td>
                   <Button variant="primary" as={Link} to="/almacen/inventarioAlimento">
-                    <span class="material-symbols-outlined">dining</span>
+                  <FontAwesomeIcon icon={faAppleWhole}/> Alimentos 
                   </Button>{" "}
                   <Button variant="primary" as={Link} to="/almacen/inventarioMedicina">
-                    <i class="bi bi-capsule"> Medicinas </i>
+                  <FontAwesomeIcon icon={faBriefcaseMedical}/> Medicinas
+                   
                   </Button>
                 </td>
               </tr>

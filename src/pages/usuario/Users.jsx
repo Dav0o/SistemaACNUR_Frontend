@@ -7,8 +7,8 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
-/* import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons"; */
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faUserDoctor, faUserGear, faHandHoldingDollar, faPenToSquare, faPersonCirclePlus}from "@fortawesome/free-solid-svg-icons";
 import api from "../../api/axios";
 import { useRef } from "react";
 
@@ -171,21 +171,23 @@ function Users() {
                     </td>
                     <td>{user.correo}</td>
                     <td>
-                      <Button variant="warning">Rol</Button>{" "}
-                      <Button variant="success">Actualizar</Button>{" "}
+                      <Button variant="warning" className="text-white"><FontAwesomeIcon icon={faPersonCirclePlus} /> Roles</Button>{" "}
+                      <Button variant="success"><FontAwesomeIcon icon={faPenToSquare}/> Actualizar</Button> 
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
             <Button variant="primary" as={Link} to="/usuario/sanitarios">
-              <i className="bi bi-bandaid"> Sanitarios</i>
+            <FontAwesomeIcon icon={faUserDoctor}/> Sanitarios
             </Button>{" "}
+
             <Button variant="primary" as={Link} to="/usuario/administradores">
-              <i class="bi bi-person-fill-gear"> Administradores</i>
+            <FontAwesomeIcon icon={faUserGear}/> Administrador
             </Button>{" "}
+
             <Button variant="primary" as={Link} to="/usuario/socios">
-              <i class="bi bi-people"> Socios</i>
+            <FontAwesomeIcon icon={faHandHoldingDollar}/> Socios
             </Button>
           </div>
         </div>

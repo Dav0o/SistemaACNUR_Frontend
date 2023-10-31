@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import "../../js/sidebar.js";
 import { NavDropdown } from "react-bootstrap";
 import "../../style/sidebar.css";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faHouse, faUsers, faHouseFlag, faTruckArrowRight, faWarehouse, faBowlRice, faPrescriptionBottleMedical}from "@fortawesome/free-solid-svg-icons";
 
 function Layout({ children }) {
   const queryClient = new QueryClient();
@@ -21,25 +23,25 @@ function Layout({ children }) {
           <ul className="list-unstyled components">
             <p>Control de Giras</p>
             <li>
-              <a href="/home">Inicio</a>
+              <a href="/home"><FontAwesomeIcon icon={faHouse}/> Inicio</a>
             </li>
             <li>
-              <a href="/usuario">Usuario</a>
+              <a href="/usuario"><FontAwesomeIcon icon={faUsers}/> Usuario</a>
             </li>
             <li>
-              <a href="/sede">Sede</a>
+              <a href="/sede"><FontAwesomeIcon icon={faHouseFlag}/> Sede</a>
             </li>
             <li>
-              <a href="/envio">Envio</a>
+              <a href="/envio"><FontAwesomeIcon icon={faTruckArrowRight}/> EnvÍo</a>
             </li>
             <li>
-              <a href="/almacen">Almacen</a>
+              <a href="/almacen"><FontAwesomeIcon icon={faWarehouse}/> Almacén</a>
             </li>
             <li>
-              <a href="/alimento">Alimento</a>
+              <a href="/alimento"><FontAwesomeIcon icon={faBowlRice}/> Alimento</a>
             </li>
             <li>
-              <a href="/medicina">Medicina</a>
+              <a href="/medicina"><FontAwesomeIcon icon={faPrescriptionBottleMedical}/> Medicina</a>
             </li>
           </ul>
         </nav>

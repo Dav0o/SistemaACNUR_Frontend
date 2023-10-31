@@ -10,33 +10,61 @@ import { useRef, useState, useEffect} from "react";
 
 function Sedes() {
 
-const sedeId = useRef();
+const idSede = useRef();
 const direccionId = useRef();
-
+const pais = useRef();
+const ciudad = useRef();
+const estado = useRef();
+const direccionExacta = useRef();
 
 
 
 const [sedes, setSedes] = useState([]);
 
-  useEffect(() => {
-    api
+  useEffect( () => {
+    /* await api
       .get("Sedes")
       .then((response) => {
         setSedes(response.data);
+        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
-      });
-  }, []);
+      }); */
+      console.log(sedes);
+  }, [sedes]);
 
 
-  const handleSave = () => {
+  const handleSave = /* async */ () => {
     let newSede = {
-      id: sedeId.current.value,
-      direccion: direccionId.current.value,
+      idSede: idSede.current.value,
+      direccionId: direccionId.current.value
     };
 
-    api.post(newSede);
+    let newDireccion = {
+      idDireccion: direccionId.current.value,
+      pais: pais.current.value,
+      ciudad: ciudad.current.value,
+      estado: estado.current.value,
+      direccionExacta: direccionExacta.current.value
+    };
+
+    /* await api.post("Direccions" ,newDireccion);
+    await api.post("Sedes" ,newSede); */
+
+
+    //base de datos imaginaria
+    setSedes([...sedes,{
+      idSede: idSede.current.value,
+      direccionId: direccionId.current.value,
+      direccion: {
+        idDireccion: direccionId.current.value,
+        pais: pais.current.value,
+        ciudad: ciudad.current.value,
+        estado: estado.current.value,
+        direccionExacta: direccionExacta.current.value
+      }
+    }]);
   };
 
 
@@ -57,11 +85,33 @@ const [sedes, setSedes] = useState([]);
                 <Row className="mb-2">
                   <Col>
                     <Form.Label htmlFor="inputSedeId">Sede</Form.Label>
-                    <Form.Control type="number" id="inputSedeId" ref={sedeId} />
+                    <Form.Control type="text" id="inputSedeId" ref={idSede} />
                   </Col>
                   <Col>
-                    <Form.Label htmlFor="inputDireccionId">Dirección</Form.Label>
+                    <Form.Label htmlFor="inputDireccionId">Dirección Id</Form.Label>
                     <Form.Control type="text" id="inputDireccionId" ref={direccionId} />
+                  </Col>
+                </Row>
+                <Row className="mb-2">
+                  <Col>
+                    <Form.Label htmlFor="inputPais">Pais</Form.Label>
+                    <Form.Control type="text" id="inputPais" ref={pais} />
+                  </Col>
+                  <Col>
+                    <Form.Label htmlFor="inputCiudad">Ciudad</Form.Label>
+                    <Form.Control type="text" id="inputCiudad" ref={ciudad} />
+                  </Col>
+                </Row>
+                <Row className="mb-2">
+                  <Col>
+                    <Form.Label htmlFor="inputEstado">Estado</Form.Label>
+                    <Form.Control type="text" id="inputEstado" ref={estado} />
+                  </Col>
+                </Row>
+                <Row className="mb-2">
+                  <Col>
+                    <Form.Label htmlFor="inputdireccionExacta">Direccion Exacta</Form.Label>
+                    <Form.Control type="text" id="inputdireccionExacta" ref={direccionExacta} />
                   </Col>
                 </Row>
                 <Button variant="primary" onClick={handleSave} className="mt-3">
@@ -72,11 +122,10 @@ const [sedes, setSedes] = useState([]);
           </Accordion.Item>
         </Accordion>
         <div className="card-body">
-         {/*  <Table striped="columns" id="tableSedes">
+          <Table striped="columns" id="tableSedes">
             <thead>
               <tr>
                 <th>Id</th>
-                <th>Nombre</th>
                 <th>País</th>
                 <th>Ciudad</th>
                 <th>Estado</th>
@@ -85,9 +134,8 @@ const [sedes, setSedes] = useState([]);
             </thead>
             <tbody>
               {sedes.map((sede) => (
-                <tr key={sede.id}>
-                  <td>{sede.id}</td>
-                  <td>{sede.nombre}</td>
+                <tr key={sede.idSede}>
+                  <td>{sede.idSede}</td>
                   <td>{sede.direccion.pais}</td>
                   <td>{sede.direccion.ciudad}</td>
                   <td>{sede.direccion.estado}</td>
@@ -99,7 +147,7 @@ const [sedes, setSedes] = useState([]);
                 </tr>
               ))}
             </tbody>
-          </Table> */}
+          </Table>
         </div>
       </div>
     </Container>
