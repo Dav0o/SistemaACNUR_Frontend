@@ -22,7 +22,7 @@ const direccionExacta = useRef();
 const [sedes, setSedes] = useState([]);
 
   useEffect( () => {
-    /* await api
+      api
       .get("Sedes")
       .then((response) => {
         setSedes(response.data);
@@ -30,16 +30,13 @@ const [sedes, setSedes] = useState([]);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
-      }); */
+      }); 
       console.log(sedes);
-  }, [sedes]);
+  }, []);
 
 
-  const handleSave = /* async */ () => {
-    let newSede = {
-      idSede: idSede.current.value,
-      direccionId: direccionId.current.value
-    };
+  const handleSave =  () => {
+  
 
     let newDireccion = {
       idDireccion: direccionId.current.value,
@@ -48,23 +45,22 @@ const [sedes, setSedes] = useState([]);
       estado: estado.current.value,
       direccionExacta: direccionExacta.current.value
     };
-
-    /* await api.post("Direccions" ,newDireccion);
-    await api.post("Sedes" ,newSede); */
-
-
-    //base de datos imaginaria
-    setSedes([...sedes,{
+    let newSede = {
       idSede: idSede.current.value,
-      direccionId: direccionId.current.value,
-      direccion: {
-        idDireccion: direccionId.current.value,
-        pais: pais.current.value,
-        ciudad: ciudad.current.value,
-        estado: estado.current.value,
-        direccionExacta: direccionExacta.current.value
-      }
-    }]);
+      direccionId: direccionId.current.value
+    };
+
+    console.log(newSede);
+    console.log(newDireccion);  
+
+    api.post("Direccions", newDireccion)
+    .then((response) => {console.log(response)})
+    .catch((error) => {console.log(error)});
+
+    api.post("Sedes", newSede)
+    .then((response) => {console.log(response)})
+    .catch((error) => {console.log(error)});
+
   };
 
 
