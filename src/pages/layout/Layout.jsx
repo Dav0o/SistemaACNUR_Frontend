@@ -91,7 +91,7 @@ function Layout({ children }) {
           <div className="container m-4 d-flex justify-content-center">
             {children}
           </div>
-          <main classNameName="flex-grow-1 p-3">
+          <main className="flex-grow-1 p-3">
             <QueryClientProvider client={queryClient}>
               <Outlet />
             </QueryClientProvider>
