@@ -6,64 +6,76 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import api from "../../api/axios";
-import { useRef, useState, useEffect} from "react";
+import { useRef, useState, useEffect } from "react";
 
 function Sedes() {
+  const idSede = useRef();
+  const direccionId = useRef();
+  const pais = useRef();
+  const ciudad = useRef();
+  const estado = useRef();
+  const direccionExacta = useRef();
 
-const idSede = useRef();
-const direccionId = useRef();
-const pais = useRef();
-const ciudad = useRef();
-const estado = useRef();
-const direccionExacta = useRef();
+  const [sedes, setSedes] = useState([]);
 
+  useEffect(() => {
+    fetchSedes();
+  }, []);
 
-
-const [sedes, setSedes] = useState([]);
-
-  useEffect( () => {
-      api
+  const fetchSedes = () => {
+    api
       .get("Sedes")
       .then((response) => {
         setSedes(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
-      }); 
-      console.log(sedes);
-  }, []);
+      });
+  };
 
-
-  const handleSave =  () => {
-  
-
+  const handleSave = () => {
     let newDireccion = {
       idDireccion: direccionId.current.value,
       pais: pais.current.value,
       ciudad: ciudad.current.value,
       estado: estado.current.value,
-      direccionExacta: direccionExacta.current.value
+      direccionExacta: direccionExacta.current.value,
     };
     let newSede = {
       idSede: idSede.current.value,
-      direccionId: direccionId.current.value
+      direccionId: direccionId.current.value,
     };
 
     console.log(newSede);
-    console.log(newDireccion);  
+    console.log(newDireccion);
 
-    api.post("Direccions", newDireccion)
-    .then((response) => {console.log(response)})
-    .catch((error) => {console.log(error)});
+    api
+      .post("Direccions", newDireccion)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
-    api.post("Sedes", newSede)
-    .then((response) => {console.log(response)})
-    .catch((error) => {console.log(error)});
+    api
+      .post("Sedes", newSede)
+      .then((response) => {
+        console.log(response);
+        fetchSedes();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
 
+      direccionId.current.value = ""
+      pais.current.value = ""
+      ciudad.current.value = ""
+      estado.current.value = ""
+      direccionExacta.current.value = ""
+      idSede.current.value = ""
+      direccionId.current.value = "" 
   };
-
-
 
   return (
     <Container className="container-fluid">
@@ -84,8 +96,14 @@ const [sedes, setSedes] = useState([]);
                     <Form.Control type="text" id="inputSedeId" ref={idSede} />
                   </Col>
                   <Col>
-                    <Form.Label htmlFor="inputDireccionId">Dirección Id</Form.Label>
-                    <Form.Control type="text" id="inputDireccionId" ref={direccionId} />
+                    <Form.Label htmlFor="inputDireccionId">
+                      Dirección Id
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputDireccionId"
+                      ref={direccionId}
+                    />
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -106,8 +124,14 @@ const [sedes, setSedes] = useState([]);
                 </Row>
                 <Row className="mb-2">
                   <Col>
-                    <Form.Label htmlFor="inputdireccionExacta">Direccion Exacta</Form.Label>
-                    <Form.Control type="text" id="inputdireccionExacta" ref={direccionExacta} />
+                    <Form.Label htmlFor="inputdireccionExacta">
+                      Direccion Exacta
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputdireccionExacta"
+                      ref={direccionExacta}
+                    />
                   </Col>
                 </Row>
                 <Button variant="primary" onClick={handleSave} className="mt-3">
@@ -152,8 +176,7 @@ const [sedes, setSedes] = useState([]);
 
 export default Sedes;
 
-
- /*  const sedes = [
+/*  const sedes = [
     {
       id: "Sede 1",
       nombre: "Sede Rolo",
