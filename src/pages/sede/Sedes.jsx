@@ -6,6 +6,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import api from "../../api/axios";
+
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
 import { useRef, useState, useEffect } from "react";
@@ -19,6 +20,8 @@ function Sedes() {
   const direccionExacta = useRef();
 
   const [sedes, setSedes] = useState([]);
+
+
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingSede, setEditingSede] = useState(null);
 
@@ -29,16 +32,17 @@ function Sedes() {
   
 
   useEffect(() => {
+
     api
       .get("Sedes")
       .then((response) => {
         setSedes(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
   }, []);
+
 
   const handleSave = () => {
     let newDireccion = {
@@ -52,6 +56,39 @@ function Sedes() {
       idSede: idSede.current.value,
       direccionId: direccionId.current.value,
     };
+
+
+    console.log(newSede);
+    console.log(newDireccion);
+
+    api
+      .post("Direccions", newDireccion)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    api
+      .post("Sedes", newSede)
+      .then((response) => {
+        console.log(response);
+        fetchSedes();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+      direccionId.current.value = ""
+      pais.current.value = ""
+      ciudad.current.value = ""
+      estado.current.value = ""
+      direccionExacta.current.value = ""
+      idSede.current.value = ""
+      direccionId.current.value = "" 
+  };
+
 
     api
       .post("Direccions", newDireccion)
@@ -156,6 +193,7 @@ function Sedes() {
     setSelectedSedeDetails(sede);
     setShowDetailsModal(true);
   };
+
 
   return (
     <Container className="container-fluid">
@@ -365,4 +403,6 @@ function Sedes() {
   );
 }
 
+
 export default Sedes;
+

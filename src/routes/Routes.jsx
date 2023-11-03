@@ -13,6 +13,7 @@ import Socio from "../pages/usuario/components/Socio";
 import InventarioAlimento from "../pages/almacen/components/InventarioAlimento";
 import InventarioMedicina from "../pages/almacen/components/InventarioMedicina";
 import Login from "../pages/auth/Login";
+import UsuarioRol from "../pages/usuario/components/UsuarioRol";
 
 
 
@@ -28,6 +29,7 @@ const routes = (
           <Route path="/usuario/sanitarios" element={<VoluntSanitario/>}/>
           <Route path="/usuario/administradores" element={<VoluntAdministrador/>}/>
           <Route path="/usuario/socios" element={<Socio/>}/>
+          <Route path="/usuario/usuarioRol" element={<UsuarioRol/>}/>
 
 
           <Route path="/sede" element={<Sedes/>}/>
