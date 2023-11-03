@@ -21,7 +21,7 @@ function Almacenes() {
   const descripcionAlmacen = useRef();
   const sedeId = useRef();
 
-  const [almacene, setAlmacenes] = useState([]);
+  const [almacen, setAlmacenes] = useState([]);
 
   useEffect(() => {
     api
@@ -36,10 +36,12 @@ function Almacenes() {
 
   const handleSave = () => {
     let newAlmacen = {
-      idAlmacen: idAlmacen.current.value,
+
+       idAlmacen: idAlmacen.current.value,
       nombreAlmacen: nombreAlmacen.current.value,
       descripcionAlmacen: descripcionAlmacen.current.value,
-      sedeId: 'santa1', 
+      sedeId: sedeId.current.value, 
+
     };
 
     api.post("Almacens",newAlmacen).then((response) => {console.log(response)}).catch((error) => {console.log(error)});
