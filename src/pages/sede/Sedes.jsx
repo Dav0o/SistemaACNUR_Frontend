@@ -6,6 +6,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import api from "../../api/axios";
+
+import Modal from "react-bootstrap/Modal";
+import Swal from "sweetalert2";
 import { useRef, useState, useEffect } from "react";
 
 function Sedes() {
@@ -18,11 +21,18 @@ function Sedes() {
 
   const [sedes, setSedes] = useState([]);
 
-  useEffect(() => {
-    fetchSedes();
-  }, []);
 
-  const fetchSedes = () => {
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingSede, setEditingSede] = useState(null);
+
+  // Muestra los detalles de la sede
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedSedeDetails, setSelectedSedeDetails] = useState(null);
+
+  
+
+  useEffect(() => {
+
     api
       .get("Sedes")
       .then((response) => {
@@ -31,7 +41,8 @@ function Sedes() {
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
-  };
+  }, []);
+
 
   const handleSave = () => {
     let newDireccion = {
@@ -45,6 +56,7 @@ function Sedes() {
       idSede: idSede.current.value,
       direccionId: direccionId.current.value,
     };
+
 
     console.log(newSede);
     console.log(newDireccion);
@@ -76,6 +88,112 @@ function Sedes() {
       idSede.current.value = ""
       direccionId.current.value = "" 
   };
+
+
+    api
+      .post("Direccions", newDireccion)
+      .then((response) => {
+        console.log(response);
+        window.location.reload(); 
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    api
+      .post("Sedes", newSede)
+      .then((response) => {
+        console.log(response);
+        window.location.reload(); 
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleEditClick = (sede) => {
+    setEditingSede(sede);
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  };
+
+  const handleUpdate = () => {
+    const updatedSede = {
+      idSede: editingSede.idSede,
+      direccionId: direccionId.current.value,
+      direccion: {
+        idDireccion: direccionId.current.value,
+        pais: pais.current.value,
+        ciudad: ciudad.current.value,
+        estado: estado.current.value,
+        direccionExacta: direccionExacta.current.value,
+      },
+    };
+
+    const updateSedePromise = api.put(`Sedes`, updatedSede);
+    const updateDireccionPromise = api.put(`Direccions`, updatedSede.direccion);
+
+    Promise.all([updateSedePromise, updateDireccionPromise])
+      .then((responses) => {
+        Swal.fire({
+          title: "¡Actualizado!",
+          text: "La Sede ha sido actualizada correctamente.",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          console.log(responses);
+          setShowEditModal(false);
+          setEditingSede(null);
+          window.location.reload(); 
+        });
+      })
+      .catch((errors) => {
+        console.error("Error al actualizar la sede o dirección:", errors);
+        Swal.fire({
+          title: "Error",
+          text: "Hubo un error al actualizar la sede o dirección.",
+          icon: "error",
+          confirmButtonColor: "#d33",
+        });
+      });
+  };
+
+  const handleDelete = (sedeId) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminarlo",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        api
+          .delete(`Sedes?Id=${sedeId}`)
+          .then((response) => {
+            console.log(response);
+
+            const updatedSedes = sedes.filter((sede) => sede.idSede !== sedeId);
+            setSedes(updatedSedes);
+            window.location.reload(); 
+          })
+          .catch((error) => {
+            console.error("Error al eliminar la sede:", error);
+          });
+      }
+    });
+  };
+
+  const handleDetailsClick = (sede) => {
+    setSelectedSedeDetails(sede);
+    setShowDetailsModal(true);
+  };
+
 
   return (
     <Container className="container-fluid">
@@ -160,9 +278,25 @@ function Sedes() {
                   <td>{sede.direccion.ciudad}</td>
                   <td>{sede.direccion.estado}</td>
                   <td>
-                    <Button variant="danger">Eliminar</Button>{" "}
-                    <Button variant="success">Actualizar</Button>{" "}
-                    <Button variant="info">Detalles</Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(sede.idSede)}
+                    >
+                      Eliminar
+                    </Button>
+
+                    <Button
+                      variant="success"
+                      onClick={() => handleEditClick(sede)}
+                    >
+                      Actualizar
+                    </Button>
+                    <Button
+                      variant="info"
+                      onClick={() => handleDetailsClick(sede)}
+                    >
+                      Detalles
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -170,38 +304,105 @@ function Sedes() {
           </Table>
         </div>
       </div>
+
+      {/* Modal para editar */}
+      <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Sede</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Label>idSede</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese la id de la sede"
+              defaultValue={editingSede ? editingSede.idSede : ""}
+              ref={idSede}
+              disabled
+            />
+
+            <Form.Label>idDireccion</Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Ingrese la id de la direccion"
+              defaultValue={editingSede ? editingSede.direccionId : ""}
+              ref={direccionId}
+              disabled
+            />
+            <Form.Label>Pais</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese el pais"
+              defaultValue={editingSede ? editingSede.direccion.pais : ""}
+              ref={pais}
+            />
+            <Form.Label>Ciudad</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese la ciudad"
+              defaultValue={editingSede ? editingSede.direccion.ciudad : ""}
+              ref={ciudad}
+            />
+            <Form.Label>Estado</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese el estado"
+              defaultValue={editingSede ? editingSede.direccion.estado : ""}
+              ref={estado}
+            />
+            <Form.Label>Direccion Exacta</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ingrese la direccion exacta"
+              defaultValue={
+                editingSede ? editingSede.direccion.direccionExacta : ""
+              }
+              ref={direccionExacta}
+            />
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleCloseEditModal}>
+            Cancelar
+          </Button>
+          <Button variant="dark" onClick={handleUpdate}>
+            Actualizar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* m0da1 para detalles */}
+      <Modal
+        show={showDetailsModal}
+        onHide={() => setShowDetailsModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles de la Sede</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedSedeDetails && (
+            <div>
+              <h4>ID de Sede: {selectedSedeDetails.idSede}</h4>
+              <h5>Detalles de Dirección:</h5>
+              <p>
+                ID de Dirección: {selectedSedeDetails.direccion.idDireccion}
+              </p>
+              <p>País: {selectedSedeDetails.direccion.pais}</p>
+              <p>Ciudad: {selectedSedeDetails.direccion.ciudad}</p>
+              <p>Estado: {selectedSedeDetails.direccion.estado}</p>
+              <p>
+                Dirección Exacta:{" "}
+                {selectedSedeDetails.direccion.direccionExacta}
+              </p>
+            </div>
+          )}
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }
 
+
 export default Sedes;
 
-/*  const sedes = [
-    {
-      id: "Sede 1",
-      nombre: "Sede Rolo",
-      direccion: {
-        pais: "Colombia",
-        ciudad: "Bogotá",
-        estado: "Cundinamarca",
-      },
-    },
-    {
-      id: "Sede 2",
-      nombre: "Sede Paisa",
-      direccion: {
-        pais: "Colombia",
-        ciudad: "Medellín",
-        estado: "Antioquia",
-      },
-    },
-    {
-      id: "Sede 3",
-      nombre: "Sede Chepe",
-      direccion: {
-        pais: "Costa Rica",
-        ciudad: "San José",
-        estado: "San José",
-      },
-    },
-  ]; */

@@ -16,34 +16,6 @@ import {faAppleWhole, faBriefcaseMedical } from "@fortawesome/free-solid-svg-ico
 
 function Almacenes() {
 
-
-
-  const almacenes = [
-    {
-      id: "12dSDF-3FRS3",
-      nombre: "POCOSOL",
-      descripcion: "Almacen de alimentos frios",
-      sede: {
-        id: "Sede 1",
-        nombre: "Sede Rolo"
-      }
-    },{
-      id: "BO123",
-      nombre: "Flor de loto",
-      descripcion: "Almacen de medicinas",
-      sede:{
-          id: "Sede 2",
-          nombre: "Sede Paquita"
-      }
-      
-  
-    }
-    ]
-
-
-
-
-
   const idAlmacen = useRef();
   const nombreAlmacen = useRef();
   const descripcionAlmacen = useRef();
@@ -53,7 +25,7 @@ function Almacenes() {
 
   useEffect(() => {
     api
-      .get("Almacens")
+      .get("almacens")
       .then((response) => {
         setAlmacenes(response.data);
       })
@@ -64,10 +36,12 @@ function Almacenes() {
 
   const handleSave = () => {
     let newAlmacen = {
+
        idAlmacen: idAlmacen.current.value,
       nombreAlmacen: nombreAlmacen.current.value,
       descripcionAlmacen: descripcionAlmacen.current.value,
       sedeId: sedeId.current.value, 
+
     };
 
     api.post("Almacens",newAlmacen).then((response) => {console.log(response)}).catch((error) => {console.log(error)});
@@ -95,7 +69,7 @@ function Almacenes() {
                     </Col>
                     <Col>
                       <Form.Label htmlFor="inputNombreAlmacen">Nombre</Form.Label>
-                      <Form.Control type="number" id="inputNombreAlmacen" ref={nombreAlmacen} />
+                      <Form.Control type="text" id="inputNombreAlmacen" ref={nombreAlmacen} />
                     </Col>
                   </Row>
                   <Row className="mb-2">
@@ -132,17 +106,17 @@ function Almacenes() {
             </tr>
           </thead>
           <tbody>
-            {almacenes.map((almacen) => (
-              <tr key={almacen.id}>
-                <td>{almacen.id}</td>
-                <td>{almacen.nombre}</td>
-                <td>{almacen.descripcion}</td>
-                <td>{almacen.sede.sedeId}</td>
+            {almacene.map((almacen) => (
+              <tr key={almacen.idAlmacen}>
+                <td>{almacen.idAlmacen}</td>
+                <td>{almacen.nombreAlmacen}</td>
+                <td>{almacen.descripcionAlmacen}</td>
+                <td>{almacen.sedeId}</td>
                 <td>
-                  <Button variant="primary" as={Link} to="/almacen/inventarioAlimento">
+                  <Button variant="primary" as={Link} to={`/almacen/inventarioAlimento/${almacen.idAlmacen}`}>
                   <FontAwesomeIcon icon={faAppleWhole}/> Alimentos 
                   </Button>{" "}
-                  <Button variant="primary" as={Link} to="/almacen/inventarioMedicina">
+                  <Button variant="primary" as={Link} to={`/almacen/inventarioMedicina/${almacen.idAlmacen}`}>
                   <FontAwesomeIcon icon={faBriefcaseMedical}/> Medicinas
                    
                   </Button>
