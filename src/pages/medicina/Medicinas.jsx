@@ -116,20 +116,4 @@ function Medicinas() {
 
 export default Medicinas
 
-  // const medicinas = [
-  //   {
-  //     id: 1,
-  //     nombre: "Acetaminofen",
-  //     fechaVencimiento: "2021-10-10",
-  //   },
-  //   {
-  //     id: 2,
-  //     nombre: "Acetaminofen",
-  //     fechaVencimiento: "2021-10-10",
-  //   },
-  //   {
-  //     id: 3,
-  //     nombre: "Acetaminofen",
-  //     fechaVencimiento: "2021-10-10",
-  //   },
-  // ]
+ 
