@@ -11,6 +11,8 @@ import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
 import { useRef, useState, useEffect } from "react";
 
+import React from 'react'
+
 function Sedes() {
   const idSede = useRef();
   const direccionId = useRef();
@@ -89,27 +91,6 @@ function Sedes() {
       direccionId.current.value = "" 
   };
 
-
-    api
-      .post("Direccions", newDireccion)
-      .then((response) => {
-        console.log(response);
-        window.location.reload(); 
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    api
-      .post("Sedes", newSede)
-      .then((response) => {
-        console.log(response);
-        window.location.reload(); 
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
 
   const handleEditClick = (sede) => {
     setEditingSede(sede);
@@ -196,7 +177,8 @@ function Sedes() {
 
 
   return (
-    <Container className="container-fluid">
+    <>
+     <Container className="container-fluid">
       <h1 className="h3 mb-2 text-gray-800">Sedes</h1>
       <p className="mb-4">Lista de las sedes</p>
 
@@ -400,9 +382,9 @@ function Sedes() {
         </Modal.Body>
       </Modal>
     </Container>
+    </>
   );
 }
-
 
 export default Sedes;
 

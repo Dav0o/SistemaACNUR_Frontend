@@ -106,7 +106,7 @@ function Almacenes() {
             </tr>
           </thead>
           <tbody>
-            {almacene.map((almacen) => (
+            {almacen.map((almacen) => (
               <tr key={almacen.idAlmacen}>
                 <td>{almacen.idAlmacen}</td>
                 <td>{almacen.nombreAlmacen}</td>

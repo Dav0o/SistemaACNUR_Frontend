@@ -18,7 +18,6 @@ function InventarioAlimento() {
     color: "white",
   };
 
-  
   const alimentoId = useRef();
   const cantidad = useRef();
 
@@ -67,7 +66,13 @@ function InventarioAlimento() {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+
+  const [selectedAlimento, setSelectedAlimento] = useState([]);
+
+  const handleShow = (item) => {
+    setShow(true);
+    setSelectedAlimento(item);
+  };
 
   const alimentosFilteres = alimentos.filter(
     (a) => a.almacenId == AlmacenId.inventarioAlimentoId
@@ -94,11 +99,11 @@ function InventarioAlimento() {
                       </Form.Label>
                       <Form.Select aria-label="Default select example">
                         <option>Seleccione un alimento</option>
-                        {productos.map((item)=>(
-                          <option value={item.idAlimento} ref={alimentoId}>{item.idAlimento}-{item.nombreAlimento}</option>
+                        {productos.map((item) => (
+                          <option value={item.idAlimento} ref={alimentoId}>
+                            {item.idAlimento}-{item.nombreAlimento}
+                          </option>
                         ))}
-                        
-                        
                       </Form.Select>
                     </Col>
                   </Row>
@@ -140,12 +145,14 @@ function InventarioAlimento() {
               <tbody>
                 {alimentosFilteres.map((inventarioAlimento) => (
                   <tr key={inventarioAlimento.idInventarioAlimento}>
-                   
                     <td>{inventarioAlimento.alimentoId}</td>
                     <td>{inventarioAlimento.almacenId}</td>
                     <td>{inventarioAlimento.cantidad}</td>
                     <td>
-                      <Button variant="info" onClick={handleShow}>
+                      <Button
+                        variant="info"
+                        onClick={() => handleShow(inventarioAlimento)}
+                      >
                         Detalles
                       </Button>{" "}
                       <Button variant="success">Actualizar</Button>{" "}
@@ -168,7 +175,14 @@ function InventarioAlimento() {
         <Modal.Header closeButton>
           <Modal.Title>Detalles de inventario</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+        {selectedAlimento && (
+          <>
+            <Modal.Body>
+              <h3>{selectedAlimento.alimentoId}</h3>
+              <span>{selectedAlimento.cantidad}</span>
+            </Modal.Body>
+          </>
+        )}
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
