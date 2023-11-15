@@ -36,8 +36,8 @@ const routes = (
           <Route path="/envio" element={<Envios/>}/>
 
           <Route path="/almacen" element={<Almacenes/>}/>
-          <Route path="/almacen/inventarioAlimento" element={<InventarioAlimento/>}/>
-          <Route path="/almacen/inventarioMedicina" element={<InventarioMedicina/>}/>
+          <Route path="/almacen/inventarioAlimento/:inventarioAlimentoId" element={<InventarioAlimento/>}/>
+          <Route path="/almacen/inventarioMedicina/:inventarioMedicinaId" element={<InventarioMedicina/>}/>
 
           <Route path="/alimento" element={<Alimento/>}/>
           <Route path="/medicina" element={<Medicinas/>}/>
