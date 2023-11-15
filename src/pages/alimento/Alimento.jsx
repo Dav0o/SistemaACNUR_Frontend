@@ -349,25 +349,3 @@ function Alimento() {
 export default Alimento;
 
 
-
-/*   const alimentos = [
-    {
-      id: 1,
-      nombre: "Manzana",
-      fechaVencimiento: "2021-10-10",
-      peso: 0.5,
-    },
-    {
-      id: 2,
-      nombre: "Pera",
-      fechaVencimiento: "2021-10-10",
-      peso: 0.5,
-    },
-    {
-      id: 3,
-      nombre: "Mango",
-      fechaVencimiento: "2021-10-10",
-      peso: 0.5,
-    },
-  ]; */
-  

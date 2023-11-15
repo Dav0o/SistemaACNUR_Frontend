@@ -8,13 +8,11 @@ function UsuarioRol(props) {
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
-    // Obtener la lista de roles desde la API cuando el componente se monta
     api.get("Rols").then((res) => {
       setRoles(res.data);
     });
   }, []);
 
-  // Función para manejar cambios en los checkboxes de roles
   const handleRoleChange = (roleId) => {
     if (selectedRoles.includes(roleId)) {
       setSelectedRoles(selectedRoles.filter((id) => id !== roleId));
@@ -30,10 +28,13 @@ function UsuarioRol(props) {
   return (
     <div>
       <h2>Detalles del Usuario</h2>
-      <p><strong>Cédula:</strong> {user.dniUsuario}</p>
-      <p><strong>Nombre:</strong> {user.nombreUsuario} {user.apellido1} {user.apellido2}</p>
-
-      {/* Grupo de checkboxes para elegir roles para el usuario */}
+      <p>
+        <strong>Cédula:</strong> {user.dniUsuario}
+      </p>
+      <p>
+        <strong>Nombre:</strong> {user.nombreUsuario} {user.apellido1}{" "}
+        {user.apellido2}
+      </p>
       <Form>
         {roles.map((role) => (
           <Form.Check
@@ -46,8 +47,6 @@ function UsuarioRol(props) {
           />
         ))}
       </Form>
-
-      {/* Agregar más propiedades según sea necesario */}
     </div>
   );
 }
