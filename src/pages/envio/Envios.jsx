@@ -14,6 +14,7 @@ function Envios() {
   const [editingEnvio, setEditingEnvio] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsEnvio, setDetailsEnvio] = useState({});
+  const [mostrarParteAdicional, setMostrarParteAdicional] = useState("");
 
   const idEnvio = useRef(null);
   const destino = useRef(null);
@@ -127,6 +128,19 @@ function Envios() {
       });
   };
 
+  const handleChangeTipoAyuda = () => {
+    const valorTipoAyuda = tipoAyuda.current.value;
+
+    // Aquí puedes ajustar las condiciones según tus necesidades
+    if (valorTipoAyuda === "Humanitaria") {
+      setMostrarParteAdicional("Humanitaria");
+    } else if (valorTipoAyuda === "Medicamentos") {
+      setMostrarParteAdicional("Medicamentos");
+    } else if (valorTipoAyuda === "Alimentos") {
+      setMostrarParteAdicional("Alimentos");
+    }
+  };
+
   return (
     <Container className="container-fluid">
       <h1 className="h3 mb-2 text-gray-800">Envíos</h1>
@@ -172,8 +186,9 @@ function Envios() {
                       as="select"
                       id="inputTipoAyuda"
                       ref={tipoAyuda}
+                      onChange={handleChangeTipoAyuda}
                     >
-                      <option value="" key={0}>
+                      <option value="a" key={4}>
                         Seleccione un tipo de ayuda
                       </option>
                       <option value="Humanitaria" key={1}>
@@ -220,6 +235,31 @@ function Envios() {
                     </Form.Control>
                   </Col>
                 </Row>
+
+
+                {mostrarParteAdicional === "Humanitaria" && (
+                <Row>
+                  <Col>
+                    <Form.Label htmlFor="input">
+
+                    </Form.Label>
+                  </Col>
+                </Row>
+                )}
+
+
+                {mostrarParteAdicional === "Medicamentos" && (
+                  <div>
+                    </div>  
+                )}
+
+
+                {mostrarParteAdicional === "Alimentos" && (
+                  <div>
+                    {/* Aquí va la parte de HTML que se mostrará cuando el tipo de ayuda sea 'Alimentos' o 'Medicinas' */}
+                    <p>Contenido para alimentos...</p>
+                  </div>
+                )}
 
                 <Button variant="primary" onClick={handleSave} className="mt-3">
                   Guardar

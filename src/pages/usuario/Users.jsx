@@ -22,7 +22,9 @@ import { useRef } from "react";
 
 function Users() {
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
   const dniUsuario = useRef(0);
   const nombreUsuario = useRef(null);
@@ -35,6 +37,8 @@ function Users() {
   const sedeId = useRef(null);
 
   const [users, setUsers] = useState([]);
+  const [sedes, setSedes] = useState([]);
+  const [editingUsuario, setEditingUsuario] = useState(null);
 
   const handleShowModal = (user) => {
     setSelectedUser(user);
@@ -55,7 +59,17 @@ function Users() {
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
-  }, []);
+
+    api
+      .get("Sedes")
+      .then((response) => {
+        setSedes(response.data);
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+  }, [refresh]);
 
   const handleSave = () => {
     let newUser = {
@@ -74,9 +88,58 @@ function Users() {
       .post("Usuario", newUser)
       .then((response) => {
         console.log(response);
+        setRefresh(!refresh);
       })
       .catch((error) => {
         console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
+      });
+  };
+
+  //Modal Editar
+  const handleEditModal = (user) => {
+    setShowEditModal(true);
+    setEditingUsuario(user);
+    console.log(user);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingUsuario(null);
+  };
+
+  const handleUpdate = () => {
+    let updatedUser = {
+      dniUsuario: dniUsuario.current.value,
+      nombreUsuario: nombreUsuario.current.value,
+      apellido1: apellido1.current.value,
+      apellido2: apellido2.current.value,
+      correo: correo.current.value,
+      clave: clave.current.value,
+      telefono: telefono.current.value,
+      direccion: direccion.current.value,
+      sedeId: sedeId.current.value,
+    };
+
+    api
+      .put("User", updatedUser)
+      .then((response) => {
+        console.log(response);
+
+        handleCloseEditModal();
+        setRefresh(!refresh);
+
+        dniUsuario.current.value = 0;
+        nombreUsuario.current.value = "";
+        apellido1.current.value = "";
+        apellido2.current.value = "";
+        correo.current.value = "";
+        clave.current.value = "";
+        telefono.current.value = 0;
+        direccion.current.value = "";
+        sedeId.current.value = "";
+      })
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -103,7 +166,16 @@ function Users() {
                   </Col>
                   <Col>
                     <Form.Label htmlFor="inputSedeId">Sede</Form.Label>
-                    <Form.Control type="text" id="inputDNI" ref={sedeId} />
+                    <Form.Control as="select" id="inputDNI" ref={sedeId}>
+                      <option value="0" key={-1}>
+                        Seleccione una sede
+                      </option>
+                      {sedes.map((sede) => (
+                        <option key={sede.idSede} value={sede.idSede}>
+                          {sede.direccion.ciudad}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -192,7 +264,7 @@ function Users() {
                   >
                     <FontAwesomeIcon icon={faPersonCirclePlus} /> Roles
                   </Button>{" "}
-                  <Button variant="success">
+                  <Button variant="success" onClick={()=>handleEditModal(user)}>
                     <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                   </Button>
                 </td>
@@ -223,6 +295,132 @@ function Users() {
           <Modal.Footer>
             <Button variant="secondary" onClick={handleHideModal}>
               Cerrar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Editar usuario</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <Row>
+                <Col>
+                  <Form.Label>Cédula</Form.Label>
+                  <Form.Control
+                    type="number"
+                    defaultValue={
+                      editingUsuario ? editingUsuario.dniUsuario : ""
+                    }
+                    ref={dniUsuario}
+                    readOnly
+                  />
+                </Col>
+
+                <Col>
+                  <Form.Label htmlFor="inputSede">Sede</Form.Label>
+                  <Form.Control
+                    as="select"
+                    id="inputSede"
+                    ref={sedeId}
+                    defaultValue={editingUsuario ? editingUsuario.sedeId : ""}
+                  >
+                    <option value=" " key={-1}>
+                      Seleccione una sede
+                    </option>
+                    {sedes.map((sede) => (
+                      <option key={sede.sedeId} value={sede.sede}>
+                        {sede.direccion.ciudad}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Col>
+
+              </Row>
+
+              <Row>
+                <Col>
+                  <Form.Label>Nombre</Form.Label>
+                  <Form.Control
+                    type="text"
+                    defaultValue={
+                      editingUsuario ? editingUsuario.nombreUsuario : ""
+                    }
+                    ref={nombreUsuario}
+                  />
+                </Col>
+                <Col>
+                  <Form.Label>Primer apellido</Form.Label>
+                  <Form.Control
+                    type="text"
+                    defaultValue={
+                      editingUsuario ? editingUsuario.apellido1 : ""
+                    }
+                    ref={apellido1}
+                  />
+                </Col>
+                <Col>
+                  <Form.Label>Segundo apellido</Form.Label>
+                  <Form.Control
+                    type="text"
+                    defaultValue={
+                      editingUsuario ? editingUsuario.apellido2 : ""
+                    }
+                    ref={apellido2}
+                  />
+                </Col>
+              </Row>
+
+              <Row>
+                <Col>
+                  <Form.Label>Telefono</Form.Label>
+                  <Form.Control
+                    type="number"
+                    defaultValue={editingUsuario ? editingUsuario.telefono : ""}
+                    ref={telefono}
+                  />
+                </Col>
+
+                <Col>
+                  <Form.Label>Dirección</Form.Label>
+                  <Form.Control
+                    type="text"
+                    defaultValue={
+                      editingUsuario ? editingUsuario.direccion : ""
+                    }
+                    ref={direccion}
+                  />
+                </Col>
+              </Row>
+
+              <Row>
+              <Col>
+                  <Form.Label>Correo electrónico</Form.Label>
+                  <Form.Control
+                    type="text"
+                    defaultValue={editingUsuario ? editingUsuario.correo : ""}
+                    ref={correo}
+                  />
+                </Col>
+
+                <Col>
+                  <Form.Label>Contraseña</Form.Label>
+                  <Form.Control
+                    type="password"
+                    defaultValue={editingUsuario ? editingUsuario.clave : ""}
+                    ref={clave}
+                  />
+                </Col>
+                </Row>
+
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="danger" onClick={handleCloseEditModal}>
+              Cancelar
+            </Button>
+            <Button variant="dark" onClick={handleUpdate}>
+              Actualizar
             </Button>
           </Modal.Footer>
         </Modal>
