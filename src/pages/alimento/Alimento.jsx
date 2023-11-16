@@ -10,11 +10,11 @@ import api from "../../api/axios";
 import { Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash, faCircleInfo} from "@fortawesome/free-solid-svg-icons";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
-
 function Alimento() {
-
   const idAlimento = useRef();
   const nombreAlimento = useRef();
   const fechaVencimiento = useRef();
@@ -26,7 +26,6 @@ function Alimento() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedAlimento, setSelectedAlimento] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
 
   useEffect(() => {
     api
@@ -45,29 +44,30 @@ function Alimento() {
       nombreAlimento: nombreAlimento.current.value,
       fechaVencimiento: fechaVencimiento.current.value,
       peso: peso.current.value,
-      unidad: unidad.current.value
+      unidad: unidad.current.value,
     };
 
     console.log(newAlimento);
 
-  api.post("Alimentos", newAlimento)
-    .then((response) => {
-      console.log(response);
-      Swal.fire({
-        title: 'Éxito',
-        text: '¡Alimento guardado exitosamente!',
-        icon: 'success',
+    api
+      .post("Alimentos", newAlimento)
+      .then((response) => {
+        console.log(response);
+        Swal.fire({
+          title: "Éxito",
+          text: "¡Alimento guardado exitosamente!",
+          icon: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          title: "Error",
+          text: "Ocurrió un error al guardar el alimento.",
+          icon: "error",
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrió un error al guardar el alimento.',
-        icon: 'error',
-      });
-    });
-};
+  };
 
   //////////////////////----------update------------///////////////////////////7
 
@@ -81,15 +81,13 @@ function Alimento() {
     setEditingAlimento(null);
   };
 
-
   const handleUpdate = () => {
-
     const updatedAlimento = {
       idAlimento: editingAlimento.idAlimento,
       nombreAlimento: nombreAlimento.current.value,
       fechaVencimiento: fechaVencimiento.current.value,
       peso: peso.current.value,
-      unidad: unidad.current.value
+      unidad: unidad.current.value,
     };
 
     api
@@ -118,8 +116,6 @@ function Alimento() {
   };
   ///////////////////---------------------------------//////////////////////////////
 
-
-
   //////////////////////----------delete------------///////////////////////////7
 
   const handleDelete = (alimentoId) => {
@@ -134,7 +130,6 @@ function Alimento() {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-
         api
           .delete(`Alimentos?Id=${alimentoId}`)
           .then((response) => {
@@ -153,9 +148,6 @@ function Alimento() {
   };
   ///////////////////---------------------------------//////////////////////////////
 
-
-
-
   ///////////////////---------------Details-------------//////////////////////////////
 
   const handleDetailsClick = (alimento) => {
@@ -168,8 +160,6 @@ function Alimento() {
   };
 
   ///////////////////---------------------------------//////////////////////////////
-
-
 
   return (
     <Container className="container-fluid">
@@ -186,18 +176,36 @@ function Alimento() {
               <Container>
                 <Row className="mb-2">
                   <Col>
-                    <Form.Label htmlFor="inputIdAlimento">Id Alimento</Form.Label>
-                    <Form.Control type="text" id="inputIdAlimento" ref={idAlimento} />
+                    <Form.Label htmlFor="inputIdAlimento">
+                      Id Alimento
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputIdAlimento"
+                      ref={idAlimento}
+                    />
                   </Col>
                   <Col>
-                    <Form.Label htmlFor="inputNombreAlimento">Nombre</Form.Label>
-                    <Form.Control type="text" id="inputNombreAlimento" ref={nombreAlimento} />
+                    <Form.Label htmlFor="inputNombreAlimento">
+                      Nombre
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputNombreAlimento"
+                      ref={nombreAlimento}
+                    />
                   </Col>
                 </Row>
                 <Row className="mb-2">
                   <Col>
-                    <Form.Label htmlFor="inputFechaVencimiento">Fecha Vencimiento</Form.Label>
-                    <Form.Control type="date" id="inputFechaVencimiento" ref={fechaVencimiento} />
+                    <Form.Label htmlFor="inputFechaVencimiento">
+                      Fecha Vencimiento
+                    </Form.Label>
+                    <Form.Control
+                      type="date"
+                      id="inputFechaVencimiento"
+                      ref={fechaVencimiento}
+                    />
                   </Col>
                   <Col>
                     <Form.Label htmlFor="inputPeso">Peso</Form.Label>
@@ -236,17 +244,25 @@ function Alimento() {
                   <td>{alimento.peso}</td>
                   <td>{alimento.unidad}</td>
                   <td>
-                    <Button variant="danger" onClick={() => handleDelete(alimento.idAlimento)}>
-                      Eliminar</Button>{" "}
-
-                    <Button variant="success" onClick={() => handleEditClick(alimento)}>
-                      Actualizar
+                    <Button
+                      variant="success"
+                      onClick={() => handleEditClick(alimento)}
+                    >
+                     <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button>{" "}
-
-                    <Button variant="info" onClick={() => handleDetailsClick(alimento)}>
-                      Detalles
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(alimento.idAlimento)}
+                    >
+                     <FontAwesomeIcon icon={faTrash} /> Eliminar
+                    </Button>{" "}
+                    <Button
+                      variant="info"
+                      className="text-white"
+                      onClick={() => handleDetailsClick(alimento)}
+                    >
+                    <FontAwesomeIcon icon={faCircleInfo} /> Detalles
                     </Button>
-
                   </td>
                 </tr>
               ))}
@@ -254,7 +270,6 @@ function Alimento() {
           </Table>
         </div>
       </div>
-
 
       <Modal show={showEditModal} onHide={handleCloseEditModal}>
         <Modal.Header closeButton>
@@ -266,7 +281,9 @@ function Alimento() {
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={editingAlimento ? editingAlimento.nombreAlimento : ""}
+                defaultValue={
+                  editingAlimento ? editingAlimento.nombreAlimento : ""
+                }
                 ref={nombreAlimento}
               />
             </Form.Group>
@@ -274,7 +291,9 @@ function Alimento() {
               <Form.Label>Fecha Vencimiento</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={editingAlimento ? editingAlimento.fechaVencimiento : ""}
+                defaultValue={
+                  editingAlimento ? editingAlimento.fechaVencimiento : ""
+                }
                 ref={fechaVencimiento}
               />
             </Form.Group>
@@ -300,12 +319,11 @@ function Alimento() {
           <Button variant="danger" onClick={handleCloseEditModal}>
             Cancelar
           </Button>
-          <Button variant="success" onClick={handleUpdate}>
+          <Button variant="dark" onClick={handleUpdate}>
             Actualizar
           </Button>
         </Modal.Footer>
       </Modal>
-
 
       <Offcanvas
         show={isDetailsOpen}
@@ -319,33 +337,29 @@ function Alimento() {
           {selectedAlimento && (
             <div>
               <div>
-               
-               <div style={{ marginBottom: '20px' }} >
-                <strong>ID:</strong> {selectedAlimento.idAlimento}
-               </div>
-                <div  style={{ marginBottom: '15px' }}>
-                  <strong>Nombre:</strong> {selectedAlimento.nombreAlimento}
-                  </div>
-                  <div  style={{ marginBottom: '15px' }}>
-                  <strong>Fecha de Vencimiento:</strong> {selectedAlimento.fechaVencimiento}
-                  </div>
-                  <div  style={{ marginBottom: '15px' }}>
-                <strong>Peso:</strong> {selectedAlimento.peso}
+                <div style={{ marginBottom: "20px" }}>
+                  <strong>ID:</strong> {selectedAlimento.idAlimento}
                 </div>
-                <div  style={{ marginBottom: '15px' }}>
-                <strong>Unidad:</strong> {selectedAlimento.unidad}
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Nombre:</strong> {selectedAlimento.nombreAlimento}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Fecha de Vencimiento:</strong>{" "}
+                  {selectedAlimento.fechaVencimiento}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Peso:</strong> {selectedAlimento.peso}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Unidad:</strong> {selectedAlimento.unidad}
                 </div>
               </div>
             </div>
           )}
         </Offcanvas.Body>
       </Offcanvas>
-
     </Container>
-
   );
 }
 
 export default Alimento;
-
-

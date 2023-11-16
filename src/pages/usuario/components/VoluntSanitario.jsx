@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Button,
   Table,
@@ -23,6 +23,7 @@ function VoluntSanitario() {
   const [voluntSanitarios, setVoluntarioSanitario] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [profesiones, setProfesiones] = useState([]);
+  const [profesionVoluntarios, setProfesionVoluntarios] = useState([]);
 
   const idVoluntarioSanitario = useRef(0);
   const disponible = useRef(false);
@@ -63,6 +64,16 @@ function VoluntSanitario() {
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
+
+    api
+      .get("ProfesionVoluntarios")
+      .then((response) => {
+        setProfesionVoluntarios(response.data);
+        console.log("ProfesionVoluntarios", response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
   }, [refresh]);
 
   const handleSave = () => {
@@ -72,7 +83,6 @@ function VoluntSanitario() {
       usuarioDni: usuarioDni.current.value,
     };
 
-
     let newProfesion = {
       voluntarioSanitarioId: idVoluntarioSanitario.current.value,
       profesionId: profesionId.current.value,
@@ -81,7 +91,7 @@ function VoluntSanitario() {
     api
       .post("VoluntarioSanitarios", newUVoluntarioSanitario)
       .then((response) => {
-        console.log("Volunatrio Sanitario Enviado",newUVoluntarioSanitario);
+        console.log("Volunatrio Sanitario Enviado", newUVoluntarioSanitario);
         console.log(response);
       })
       .catch((error) => {
@@ -98,7 +108,7 @@ function VoluntSanitario() {
       .post("ProfesionVoluntarios", newProfesion)
       .then((response) => {
         console.log(response);
-        console.log("Profesion Enviada",newProfesion);
+        console.log("Profesion Enviada", newProfesion);
         setRefresh(!refresh);
       })
       .catch((error) => {
@@ -106,11 +116,10 @@ function VoluntSanitario() {
         setRefresh(!refresh);
       });
 
-      idVoluntarioSanitario.current.value = "";
-      disponible.current.value = "";
-      usuarioDni.current.value = "";
-      profesionId.current.value = "";
-  
+    idVoluntarioSanitario.current.value = "";
+    disponible.current.value = "";
+    usuarioDni.current.value = "";
+    profesionId.current.value = "";
   };
 
   const handleUpdate = () => {
@@ -190,6 +199,38 @@ function VoluntSanitario() {
     return encontrado ? encontrado : "No encontrado";
   };
 
+  function joinTablesForVoluntario(voluntario) {
+    // Unir profesionesVoluntarios con profesiones
+    const joinedData = profesionVoluntarios
+      .filter(
+        (profesionVoluntario) =>
+          profesionVoluntario.voluntarioSanitarioId ===
+          voluntario.idVoluntarioSanitario
+      )
+      .map((profesionVoluntario) => {
+        const profesion = profesiones.find(
+          (prof) => prof.idProfesion === profesionVoluntario.profesionId
+        );
+
+        return {
+          idProfesionVoluntario: profesionVoluntario.idProfesionVoluntario,
+          profesion: profesion ? { ...profesion } : null,
+          voluntarioSanitario: voluntario ? { ...voluntario } : null,
+        };
+      });
+
+    return joinedData;
+  }
+
+  console.log(
+    "joinedData",
+    joinTablesForVoluntario({
+      idVoluntarioSanitario: 1,
+      disponible: true,
+      usuarioDni: 118780796,
+    })
+  );
+
   return (
     <>
       <Container className="container-fluid">
@@ -214,12 +255,26 @@ function VoluntSanitario() {
                     </Col>
 
                     <Col>
-                      <Form.Label htmlFor="inputSedeId">Cédula</Form.Label>
+                      <Form.Label htmlFor="inputUsuario">Usuario</Form.Label>
                       <Form.Control
-                        type="number"
-                        id="inputDNI"
+                        as="select"
+                        id="inputUsuario"
                         ref={usuarioDni}
-                      />
+                      >
+                        <option value=" " key={-1}>
+                          {" "}
+                          Seleccione un usuario
+                        </option>
+                        {usuarios.map((usuario) => (
+                          <option
+                            value={usuario.dniUsuario}
+                            key={usuario.dniUsuario}
+                          >
+                            {usuario.dniUsuario} - {usuario.nombreUsuario}{" "}
+                            {usuario.apellido1} {usuario.apellido2}
+                          </option>
+                        ))}
+                      </Form.Control>
                     </Col>
 
                     <Col>
@@ -303,10 +358,17 @@ function VoluntSanitario() {
                         : "No encontrado"}
                     </td>
                     <td>
-                      {voluntSanitarios.map((voluntSanitario) =>
-                       
-                       voluntSanitario.nombreProfesion
-                        
+                      {joinTablesForVoluntario(voluntSanitario).map(
+                        (joinedData, index) => (
+                          <span key={index}>
+                            {joinedData.profesion
+                              ? joinedData.profesion.nombreProfesion
+                              : "Sin profesión"}
+                            {index <
+                              joinTablesForVoluntario(voluntSanitario).length -
+                                1 && ", "}
+                          </span>
+                        )
                       )}
                     </td>
                     <td>

@@ -1,6 +1,14 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Button, Table, Modal, Form, Accordion,Row,Col } from "react-bootstrap";
+import {
+  Button,
+  Table,
+  Modal,
+  Form,
+  Accordion,
+  Row,
+  Col,
+} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -11,7 +19,6 @@ import "sweetalert2/dist/sweetalert2.min.css";
 import api from "../../../api/axios";
 
 function VoluntAdministrador() {
-
   const idVoluntarioAdministrador = useRef(0);
   const usuarioDni = useRef(0);
 
@@ -23,7 +30,8 @@ function VoluntAdministrador() {
   const [profesiones, setProfesiones] = useState([]);
 
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingVolunAdministrador, setEditingVolunAdministrador] = useState(null);
+  const [editingVolunAdministrador, setEditingVolunAdministrador] =
+    useState(null);
 
   useEffect(() => {
     api
@@ -69,232 +77,259 @@ function VoluntAdministrador() {
     };
 
     api
-    .post("VoluntarioAdministradors", newUVoluntarioAdministrador)
-    .then((response) => {
-      console.log(response);
-      setRefresh(!refresh);
-    })
-    .catch((error) => {
-      console.log(
-        "Nuestro JSON: ",
-        newUVoluntarioAdministrador,
-        "EL ERROR: ",
-        error
-      );
-      setRefresh(!refresh);
-    });
+      .post("VoluntarioAdministradors", newUVoluntarioAdministrador)
+      .then((response) => {
+        console.log(response);
+        setRefresh(!refresh);
+      })
+      .catch((error) => {
+        console.log(
+          "Nuestro JSON: ",
+          newUVoluntarioAdministrador,
+          "EL ERROR: ",
+          error
+        );
+        setRefresh(!refresh);
+      });
 
-  api
-    .post("ProfesionVoluntarios", newProfesion)
-    .then((response) => {
-      console.log(response);
-      setRefresh(!refresh);
-    })
-    .catch((error) => {
-      console.log(
-        "Nuestro JSON: ",
-        newProfesion,
-        "EL ERROR: ",
-        error
-      );
-      setRefresh(!refresh);
-    });
-};
-
-const handleUpdate = () => {
-  let updatedVolunAdministrador = {
-    idVoluntarioAdministrador: idVoluntarioAdministrador.current.value,
-    usuarioDni: usuarioDni.current.value,
+    api
+      .post("ProfesionVoluntarios", newProfesion)
+      .then((response) => {
+        console.log(response);
+        setRefresh(!refresh);
+      })
+      .catch((error) => {
+        console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
+        setRefresh(!refresh);
+      });
   };
 
-  api
-    .put("VoluntarioAdministradors", updatedVolunAdministrador)
-    .then((response) => {
-      console.log(response);
+  const handleUpdate = () => {
+    let updatedVolunAdministrador = {
+      idVoluntarioAdministrador: idVoluntarioAdministrador.current.value,
+      usuarioDni: usuarioDni.current.value,
+    };
 
-      handleCloseEditModal();
-      setRefresh(!refresh);
-      
-      idVoluntarioAdministrador.current.value = "";
-      usuarioDni.current.value = "";
-      
-    })
-    .catch((error) => {
-      console.log(error);
+    api
+      .put("VoluntarioAdministradors", updatedVolunAdministrador)
+      .then((response) => {
+        console.log(response);
+
+        handleCloseEditModal();
+        setRefresh(!refresh);
+
+        idVoluntarioAdministrador.current.value = "";
+        usuarioDni.current.value = "";
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleDelete = (voluntarioAdministradorId) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminarlo",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        api
+          .delete(`VoluntarioAdministradors?Id=${voluntarioAdministradorId}`)
+          .then((response) => {
+            console.log(response);
+            // Actualiza la lista de alimentos
+            const updatedVoluntarioAdministradores =
+              VoluntAdmininistradores.filter(
+                (voluntAdministrador) =>
+                  voluntAdministrador.idVoluntarioAdministrador !==
+                  voluntarioAdministradorId
+              );
+            setAlimentos(updatedVoluntarioAdministradores);
+          })
+          .catch((error) => {
+            console.error("Error al eliminar el alimento:", error);
+          });
+      }
     });
-};
+  };
 
-const handleDelete = (voluntarioAdministradorId) => {
-  Swal.fire({
-    title: "¿Estás seguro?",
-    text: "¡No podrás revertir esto!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#d33",
-    cancelButtonColor: "#3085d6",
-    confirmButtonText: "Sí, eliminarlo",
-    cancelButtonText: "Cancelar",
-  }).then((result) => {
-    if (result.isConfirmed) {
+  const handleEditModal = (voluntAdministrador) => {
+    setEditingVolunAdministrador(voluntAdministrador);
+    setShowEditModal(true);
+  };
 
-      api
-        .delete(`VoluntarioAdministradors?Id=${voluntarioAdministradorId}`)
-        .then((response) => {
-          console.log(response);
-          // Actualiza la lista de alimentos
-          const updatedVoluntarioAdministradores = VoluntAdmininistradores.filter(
-            (voluntAdministrador) => voluntAdministrador.idVoluntarioAdministrador  !== voluntarioAdministradorId
-          );
-          setAlimentos(updatedVoluntarioAdministradores);
-        })
-        .catch((error) => {
-          console.error("Error al eliminar el alimento:", error);
-        });
-    }
-  });
-};
+  const handleCloseEditModal = () => {
+    setEditingVolunAdministrador(null);
+    setShowEditModal(false);
+  };
 
-const handleEditModal = (voluntAdministrador) => {
-  setEditingVolunAdministrador(voluntAdministrador);
-  setShowEditModal(true);
-}
+  const LinkStyle = {
+    textDecoration: "none",
+    color: "white",
+  };
 
-const handleCloseEditModal = () => {
-  setEditingVolunAdministrador(null);
-  setShowEditModal(false);
-}
-
-const LinkStyle = {
-  textDecoration: "none",
-  color: "white",
-};
-
-const match = (voluntAdministrador) => {
-  const encontrado = usuarios.find(
-    (usuario) => usuario.dniUsuario === voluntAdministrador.usuarioDni
-  );
-  return encontrado ? encontrado : "No encontrado";
-};
+  const match = (voluntAdministrador) => {
+    const encontrado = usuarios.find(
+      (usuario) => usuario.dniUsuario === voluntAdministrador.usuarioDni
+    );
+    return encontrado ? encontrado : "No encontrado";
+  };
 
   return (
     <>
-    <Container className="container-fluid">
-      <h1 className="h3 mb-2 text-gray-800">Voluntarios administradores</h1>
-      <p class="mb-4">Lista de los voluntarios administradores</p>
-      <div className="card shadow mb-4">
-        <Accordion defaultActiveKey="1">
-          <Accordion.Item eventKey="0">
-            <Accordion.Header>
-              Click en el botón para crear un usuario administrador
-            </Accordion.Header>
-            <Accordion.Body>
-              <Container>
-                <Row className="mb-2">
-                  <Col>
-                    <Form.Label htmlFor="inputIdVoluntario">Id Voluntario</Form.Label>
-                    <Form.Control
-                      type="number"
-                      id="inputIdVoluntario"
-                      ref={idVoluntarioAdministrador}
-                    />
-                  </Col>
+      <Container className="container-fluid">
+        <h1 className="h3 mb-2 text-gray-800">Voluntarios administradores</h1>
+        <p class="mb-4">Lista de los voluntarios administradores</p>
+        <div className="card shadow mb-4">
+          <Accordion defaultActiveKey="1">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                Click en el botón para crear un usuario administrador
+              </Accordion.Header>
+              <Accordion.Body>
+                <Container>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputIdVoluntario">
+                        Id Voluntario
+                      </Form.Label>
+                      <Form.Control
+                        type="number"
+                        id="inputIdVoluntario"
+                        ref={idVoluntarioAdministrador}
+                      />
+                    </Col>
 
-                  <Col>
-                    <Form.Label htmlFor="inputUsuarioDni">Cédula</Form.Label>
-                    <Form.Control
-                      type="number"
-                      id="inputUsuarioDni"
-                      ref={usuarioDni}
-                    />
-                  </Col>
-                </Row>
+                    <Col>
+                      {/* <Form.Label htmlFor="inputUsuarioDni">Usuario</Form.Label>
+                      <Form.Control
+                        type="number"
+                        id="inputUsuarioDni"
+                        ref={usuarioDni}
+                      /> */}
 
-                <Row className="mb-2">
-                <Col>
-                    <Form.Label htmlFor="inputProfesion">
-                      Profesion
-                    </Form.Label>
-                    <Form.Control
-                      as="select"
-                      id="inputProfesion"
-                      ref={profesionId}
-                    >
-                      <option value=" " key={-1}>Selecciones una Profesion</option>
-                      {profesiones.map((profesion) => (
-                        <option value={profesion.idProfesion} key={profesion.idProfesion}>
-                          {profesion.nombreProfesion}
-                        </option>
-                      ))}
-
-                    </Form.Control>
-                  </Col>
+                      <Form.Label htmlFor="inputUsuarioDni">Usuario</Form.Label>
+                      <Form.Control
+                        as="select"
+                        id="inputUsuarioDni"
+                        ref={usuarioDni}
+                      >
+                        <option value=" " key={-1}>
+                          Seleccione un usuario
+                          </option> 
+                        {usuarios.map((usuario) => (
+                          <option
+                            value={usuario.dniUsuario}
+                            key={usuario.dniUsuario}
+                          >
+                            {usuario.dniUsuario} -{usuario.nombreUsuario}{" "}{usuario.apellido1}{" "}{usuario.apellido2}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
                   </Row>
 
-                <Button
-                  variant="primary"
-                  onClick={handleSave}
-                  className="mt-3"
-                >
-                  Guardar
-                </Button>
-              </Container>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputProfesion">
+                        Profesion
+                      </Form.Label>
+                      <Form.Control
+                        as="select"
+                        id="inputProfesion"
+                        ref={profesionId}
+                      >
+                        <option value=" " key={-1}>
+                          Seleccione una profesión
+                        </option>
+                        {profesiones.map((profesion) => (
+                          <option
+                            value={profesion.idProfesion}
+                            key={profesion.idProfesion}
+                          >
+                            {profesion.nombreProfesion}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
 
-        <div className="card-body">
-          <Table striped="columns">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cédula</th>
-                <th>Nombre</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
+                  <Button
+                    variant="primary"
+                    onClick={handleSave}
+                    className="mt-3"
+                  >
+                    Guardar
+                  </Button>
+                </Container>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
 
-            <tbody>
-              {VoluntAdmininistradores.map((VoluntAdministrador) => (
-                <tr key={VoluntAdministrador.idVoluntarioAdministrador}>
-                  <td>{VoluntAdministrador.idVoluntarioAdministrador}</td>
-                  <td>{VoluntAdministrador.usuarioDni}</td>
-                  <td>
-                    {match(VoluntAdministrador).nombreUsuario ?? "No encontrado"}
-                  </td>
-              
-                  <td>
-                    <Button
-                      variant="success"
-                      className="bg-gradient-warning mr-1 text-light"
-                      onClick={
-                        () => handleEditModal(VoluntAdministrador)
-                      }
-                    >
-                     <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
-                    </Button>{" "}
-                    <Button
-                      variant="danger"
-                      className="bg-gradient-danger mr-1 text-light"
-                      onClick={() =>
-                        handleDelete(VoluntAdministrador.idVoluntarioAdministrador)
-                      }
-                    >
-                      <FontAwesomeIcon icon={faTrash} /> Eliminar
-                    </Button>{" "}
-                  </td>
+          <div className="card-body">
+            <Table striped="columns">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cédula</th>
+                  <th>Nombre completo</th>
+                  <th>Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+
+              <tbody>
+                {VoluntAdmininistradores.map((VoluntAdministrador) => (
+                  <tr key={VoluntAdministrador.idVoluntarioAdministrador}>
+                    <td>{VoluntAdministrador.idVoluntarioAdministrador}</td>
+                    <td>{VoluntAdministrador.usuarioDni}</td>
+                    <td>
+                      {match(VoluntAdministrador).nombreUsuario
+                        ? match(VoluntAdministrador).nombreUsuario +
+                          " " +
+                          match(VoluntAdministrador).apellido1 +
+                          " " +
+                          match(VoluntAdministrador).apellido2
+                        : "No encontrado"}
+                    </td>
+
+                    <td>
+                      <Button
+                        variant="success"
+                        className="bg-gradient-warning mr-1 text-light"
+                        onClick={() => handleEditModal(VoluntAdministrador)}
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
+                      </Button>{" "}
+                      <Button
+                        variant="danger"
+                        className="bg-gradient-danger mr-1 text-light"
+                        onClick={() =>
+                          handleDelete(
+                            VoluntAdministrador.idVoluntarioAdministrador
+                          )
+                        }
+                      >
+                        <FontAwesomeIcon icon={faTrash} /> Eliminar
+                      </Button>{" "}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </div>
-      </div>
-    </Container>
-    <Link style={LinkStyle} to={"/usuario"}>
-      <Button variant="dark" className="bg-gradient-danger">
-        Regresar
-      </Button>
-    </Link>
-    <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
+      </Container>
+      <Link style={LinkStyle} to={"/usuario"}>
+        <Button variant="dark" className="bg-gradient-danger">
+          Regresar
+        </Button>
+      </Link>
+      <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>Editar voluntario administrador</Modal.Title>
         </Modal.Header>
@@ -306,7 +341,9 @@ const match = (voluntAdministrador) => {
                 <Form.Control
                   type="number"
                   defaultValue={
-                    editingVolunAdministrador ? editingVolunAdministrador.idVoluntarioAdministrador : ""
+                    editingVolunAdministrador
+                      ? editingVolunAdministrador.idVoluntarioAdministrador
+                      : ""
                   }
                   ref={idVoluntarioAdministrador}
                   readOnly
@@ -318,16 +355,15 @@ const match = (voluntAdministrador) => {
                 <Form.Control
                   type="number"
                   defaultValue={
-                    editingVolunAdministrador ? editingVolunAdministrador.usuarioDni : ""
+                    editingVolunAdministrador
+                      ? editingVolunAdministrador.usuarioDni
+                      : ""
                   }
                   ref={usuarioDni}
                   readOnly
                 />
               </Col>
-
             </Row>
-
-
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -339,8 +375,8 @@ const match = (voluntAdministrador) => {
           </Button>
         </Modal.Footer>
       </Modal>
-  </>
-  )
+    </>
+  );
 }
 
-export default VoluntAdministrador
+export default VoluntAdministrador;
