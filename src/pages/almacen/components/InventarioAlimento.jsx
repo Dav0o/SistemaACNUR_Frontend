@@ -74,6 +74,17 @@ function InventarioAlimento() {
     setSelectedAlimento(item);
   };
 
+  const [toEditAlimento, setToEditAlimento] = useState([]);
+
+  const [showEdit, setShowEdit] = useState(false);
+
+  const handleShowEdit = (item) => {
+    setShowEdit(true);
+    setToEditAlimento(item);
+  };
+
+  const handleCloseEdit = () => setShowEdit(false);
+
   const alimentosFilteres = alimentos.filter(
     (a) => a.almacenId == AlmacenId.inventarioAlimentoId
   );
@@ -88,7 +99,7 @@ function InventarioAlimento() {
           <Accordion defaultActiveKey="1">
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                Click aquí para crear un inventario de Alimentos
+                Click aquí para crear o editar un inventario de Alimentos
               </Accordion.Header>
               <Accordion.Body>
                 <Container>
@@ -155,7 +166,7 @@ function InventarioAlimento() {
                       >
                         Detalles
                       </Button>{" "}
-                      <Button variant="success">Actualizar</Button>{" "}
+                      
                     </td>
                   </tr>
                 ))}
@@ -185,6 +196,18 @@ function InventarioAlimento() {
         )}
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showEdit} onHide={handleCloseEdit} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Actualizar inventario</Modal.Title>
+        </Modal.Header>
+        
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseEdit}>
             Close
           </Button>
         </Modal.Footer>

@@ -8,6 +8,7 @@ import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
 import api from "../../../api/axios";
 import { Link, useParams } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
 
 function InventarioMedicina() {
   const AlmacenId = useParams();
@@ -34,35 +35,46 @@ function InventarioMedicina() {
       });
   }, []);
 
-//get de los productos en si de las medicinas
+  //get de los productos en si de las medicinas
 
-const [productos, setProductos] = useState([]);
-useEffect(() => {
-  api
-    .get("Medicinas")
-    .then((response) => {
-      setProductos(response.data);
-    })
-    .catch((error) => {
-      console.error("Error al obtener datos:", error);
-    });
-}, []);
+  const [productos, setProductos] = useState([]);
+  useEffect(() => {
+    api
+      .get("Medicinas")
+      .then((response) => {
+        setProductos(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+  }, []);
 
-const handleSave = () => {
-  let newInventario = {
-    medicinaId: medicinaId.current.value,
-    almacenId: AlmacenId.inventarioMedicinaId,
-    cantidad: cantidad.current.value,
+  const handleSave = () => {
+    let newInventario = {
+      medicinaId: medicinaId.current.value,
+      almacenId: AlmacenId.inventarioMedicinaId,
+      cantidad: cantidad.current.value,
+    };
+    api
+      .post("InventarioMedicinas", newInventario)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
-  api
-    .post("InventarioMedicinas", newInventario)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
+
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => setShow(false);
+
+  const [selectedAlimento, setSelectedAlimento] = useState([]);
+
+  const handleShow = (item) => {
+    setShow(true);
+    setSelectedAlimento(item);
+  };
 
   const medicinasFiltered = medicinas.filter(
     (m) => m.almacenId == AlmacenId.inventarioMedicinaId
@@ -77,7 +89,7 @@ const handleSave = () => {
           <Accordion defaultActiveKey="1">
             <Accordion.Item eventKey="0">
               <Accordion.Header>
-                Click aquí para crear un inventario de Medicina
+                Click aquí para crear o editar un inventario de Medicina
               </Accordion.Header>
               <Accordion.Body>
                 <Container>
@@ -88,11 +100,11 @@ const handleSave = () => {
                       </Form.Label>
                       <Form.Select aria-label="Default select example">
                         <option>Seleccione una medicina</option>
-                        {productos.map((item)=>(
-                          <option value={item.idMedicina} ref={medicinaId}>{item.idMedicina}-{item.nombreMedicina}</option>
+                        {productos.map((item) => (
+                          <option value={item.idMedicina} ref={medicinaId}>
+                            {item.idMedicina}-{item.nombreMedicina}
+                          </option>
                         ))}
-                        
-                        
                       </Form.Select>
                     </Col>
                   </Row>
@@ -138,8 +150,7 @@ const handleSave = () => {
                     <td>{inventarioMedicina.almacenId}</td>
                     <td>{inventarioMedicina.cantidad}</td>
                     <td>
-                      <Button variant="info">Detalles</Button>{" "}
-                      <Button variant="success">Actualizar</Button>{" "}
+                      <Button variant="info" onClick={()=>handleShow(inventarioMedicina)}>Detalles</Button>{" "}
                     </td>
                   </tr>
                 ))}
@@ -154,6 +165,25 @@ const handleSave = () => {
           </div>
         </div>
       </Container>
+
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Detalles de inventario</Modal.Title>
+        </Modal.Header>
+        {selectedAlimento && (
+          <>
+            <Modal.Body>
+              <h3>{selectedAlimento.medicinaId}</h3>
+              <span>{selectedAlimento.cantidad}</span>
+            </Modal.Body>
+          </>
+        )}
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
