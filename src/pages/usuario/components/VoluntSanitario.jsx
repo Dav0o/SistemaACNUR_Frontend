@@ -12,6 +12,10 @@ import {
 import Container from "react-bootstrap/Container";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import api from "../../../api/axios";
 
 function VoluntSanitario() {
@@ -68,16 +72,17 @@ function VoluntSanitario() {
       usuarioDni: usuarioDni.current.value,
     };
 
+
     let newProfesion = {
+      voluntarioSanitarioId: idVoluntarioSanitario.current.value,
       profesionId: profesionId.current.value,
-      voluntSanitarioId: idVoluntarioSanitario.current.value,
     };
-    
+
     api
       .post("VoluntarioSanitarios", newUVoluntarioSanitario)
       .then((response) => {
+        console.log("Volunatrio Sanitario Enviado",newUVoluntarioSanitario);
         console.log(response);
-        setRefresh(!refresh);
       })
       .catch((error) => {
         console.log(
@@ -93,17 +98,19 @@ function VoluntSanitario() {
       .post("ProfesionVoluntarios", newProfesion)
       .then((response) => {
         console.log(response);
+        console.log("Profesion Enviada",newProfesion);
         setRefresh(!refresh);
       })
       .catch((error) => {
-        console.log(
-          "Nuestro JSON: ",
-          newProfesion,
-          "EL ERROR: ",
-          error
-        );
+        console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
         setRefresh(!refresh);
       });
+
+      idVoluntarioSanitario.current.value = "";
+      disponible.current.value = "";
+      usuarioDni.current.value = "";
+      profesionId.current.value = "";
+  
   };
 
   const handleUpdate = () => {
@@ -120,39 +127,56 @@ function VoluntSanitario() {
 
         handleCloseEditModal();
         setRefresh(!refresh);
-        
+
         idVoluntarioSanitario.current.value = "";
         disponible.current.value = "";
         usuarioDni.current.value = "";
-        
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const hanldelDelete = (id) => {
-
-    api
-      .delete("VoluntarioSanitarios/")
-      .then((response) => {
-        console.log(response);
-        setRefresh(!refresh);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleDelete = (voluntarioSanitarioId) => {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¡No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminarlo",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        api
+          .delete(`VoluntarioSanitarios?Id=${voluntarioSanitarioId}`)
+          .then((response) => {
+            console.log(response);
+            // Actualiza la lista de alimentos
+            const updatedVoluntarioSanitarios = VoluntSanitarios.filter(
+              (VoluntSanitario) =>
+                VoluntSanitario.idVoluntarioSanitario !== voluntarioSanitarioId
+            );
+            setAlimentos(updatedVoluntarioSanitarios);
+          })
+          .catch((error) => {
+            console.error("Error al eliminar el alimento:", error);
+          });
+      }
+    });
+    setRefresh(!refresh);
   };
 
-const handleEditModal = (voluntSanitario) => {
+  const handleEditModal = (voluntSanitario) => {
     setEditingVolunSanitario(voluntSanitario);
     setShowEditModal(true);
-  }
+  };
 
-const handleCloseEditModal = () => {
+  const handleCloseEditModal = () => {
     setEditingVolunSanitario(null);
     setShowEditModal(false);
-  }
+  };
 
   const LinkStyle = {
     textDecoration: "none",
@@ -207,6 +231,7 @@ const handleCloseEditModal = () => {
                         id="inputDisponible"
                         ref={disponible}
                       >
+                        <option value={true}>Seleccione una opción</option>
                         <option value={true}>Disponible</option>
                         <option value={false}>No disponible</option>
                       </Form.Control>
@@ -214,25 +239,29 @@ const handleCloseEditModal = () => {
                   </Row>
 
                   <Row className="mb-2">
-                  <Col>
-                      <Form.Label htmlFor="inputDisponible">
+                    <Col>
+                      <Form.Label htmlFor="inputProfesion">
                         Profesion
                       </Form.Label>
                       <Form.Control
                         as="select"
-                        id="inputDisponible"
+                        id="inputProfesion"
                         ref={profesionId}
                       >
-                        <option value=" " key={-1}>Selecciones una Profesion</option>
+                        <option value=" " key={-1}>
+                          Selecciones una profesión
+                        </option>
                         {profesiones.map((profesion) => (
-                          <option value={profesion.idProfesion} key={profesion.idProfesion}>
+                          <option
+                            value={profesion.idProfesion}
+                            key={profesion.idProfesion}
+                          >
                             {profesion.nombreProfesion}
                           </option>
                         ))}
-
                       </Form.Control>
                     </Col>
-                    </Row>
+                  </Row>
 
                   <Button
                     variant="primary"
@@ -252,7 +281,8 @@ const handleCloseEditModal = () => {
                 <tr>
                   <th>ID</th>
                   <th>Cédula</th>
-                  <th>Nombre</th>
+                  <th>Nombre completo</th>
+                  <th>Profesión</th>
                   <th>Disponibilidad</th>
                   <th>Acciones</th>
                 </tr>
@@ -264,7 +294,20 @@ const handleCloseEditModal = () => {
                     <td>{voluntSanitario.idVoluntarioSanitario}</td>
                     <td>{voluntSanitario.usuarioDni}</td>
                     <td>
-                      {match(voluntSanitario).nombreUsuario ?? "No encontrado"}
+                      {match(voluntSanitario).nombreUsuario
+                        ? match(voluntSanitario).nombreUsuario +
+                          " " +
+                          match(voluntSanitario).apellido1 +
+                          " " +
+                          match(voluntSanitario).apellido2
+                        : "No encontrado"}
+                    </td>
+                    <td>
+                      {voluntSanitarios.map((voluntSanitario) =>
+                       
+                       voluntSanitario.nombreProfesion
+                        
+                      )}
                     </td>
                     <td>
                       {voluntSanitario.disponible
@@ -274,22 +317,20 @@ const handleCloseEditModal = () => {
 
                     <td>
                       <Button
-                        variant="warning"
+                        variant="success"
                         className="bg-gradient-warning mr-1 text-light"
-                        onClick={
-                          () => handleEditModal(voluntSanitario)
-                        }
+                        onClick={() => handleEditModal(voluntSanitario)}
                       >
-                        <i class="bi bi-pencil-square"></i>
+                        <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                       </Button>{" "}
                       <Button
                         variant="danger"
                         className="bg-gradient-danger mr-1 text-light"
                         onClick={() =>
-                          hanldelDelete(voluntSanitario.idVoluntarioSanitario)
+                          handleDelete(voluntSanitario.idVoluntarioSanitario)
                         }
                       >
-                        <i class="bi bi-trash"></i>
+                        <FontAwesomeIcon icon={faTrash} /> Eliminar
                       </Button>{" "}
                     </td>
                   </tr>
@@ -305,66 +346,73 @@ const handleCloseEditModal = () => {
         </Button>
       </Link>
       <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>Editar voluntario sanitario</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form>
-              <Row>
-                <Col>
-                  <Form.Label>Id voluntario</Form.Label>
-                  <Form.Control
-                    type="number"
-                    defaultValue={
-                      editingVolunSanitario ? editingVolunSanitario.idVoluntarioSanitario : ""
-                    }
-                    ref={idVoluntarioSanitario}
-                    readOnly
-                  />
-                </Col>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar voluntario sanitario</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row>
+              <Col>
+                <Form.Label>Id voluntario</Form.Label>
+                <Form.Control
+                  type="number"
+                  defaultValue={
+                    editingVolunSanitario
+                      ? editingVolunSanitario.idVoluntarioSanitario
+                      : ""
+                  }
+                  ref={idVoluntarioSanitario}
+                  readOnly
+                />
+              </Col>
 
-                <Col>
-                  <Form.Label>Cédula</Form.Label>
-                  <Form.Control
-                    type="number"
-                    defaultValue={
-                      editingVolunSanitario ? editingVolunSanitario.usuarioDni : ""
-                    }
-                    ref={usuarioDni}
-                    readOnly
-                  />
-                </Col>
+              <Col>
+                <Form.Label>Cédula</Form.Label>
+                <Form.Control
+                  type="number"
+                  defaultValue={
+                    editingVolunSanitario
+                      ? editingVolunSanitario.usuarioDni
+                      : ""
+                  }
+                  ref={usuarioDni}
+                  readOnly
+                />
+              </Col>
 
-                <Col>
-                  <Form.Label htmlFor="inputDisponible">Disponibilidad</Form.Label>
-                  <Form.Control
-                    as="select"
-                    id="inputDisponible"
-                    ref={disponible}
-                    defaultValue={editingVolunSanitario ? editingVolunSanitario.disponible : ""}
-                  >
-                    <option value=" " key={-1}>
-                      Seleccione una opción
-                    </option>
-                    <option value={true}>Disponible</option>
-                    <option value={false}>No disponible</option>
-                  </Form.Control>
-                </Col>
-
-              </Row>
-
-
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="danger" onClick={handleCloseEditModal}>
-              Cancelar
-            </Button>
-            <Button variant="dark" onClick={handleUpdate}>
-              Actualizar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+              <Col>
+                <Form.Label htmlFor="inputDisponible">
+                  Disponibilidad
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  id="inputDisponible"
+                  ref={disponible}
+                  defaultValue={
+                    editingVolunSanitario
+                      ? editingVolunSanitario.disponible
+                      : ""
+                  }
+                >
+                  <option value=" " key={-1}>
+                    Seleccione una opción
+                  </option>
+                  <option value={true}>Disponible</option>
+                  <option value={false}>No disponible</option>
+                </Form.Control>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleCloseEditModal}>
+            Cancelar
+          </Button>
+          <Button variant="dark" onClick={handleUpdate}>
+            Actualizar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
