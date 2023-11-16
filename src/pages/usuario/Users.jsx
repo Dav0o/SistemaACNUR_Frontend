@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
@@ -56,8 +56,8 @@ function Users() {
 
   const saveRoles = (selectedRoles) => {
     // Lógica para guardar los roles aquí
-    console.log("Guardando roles:", selectedRoles);
-    console.log("Usuario:", selectedUser.nombreUsuario);
+    /* console.log("Guardando roles:", selectedRoles);
+    console.log("Usuario:", selectedUser.nombreUsuario); */
 
     selectedRoles.forEach((rol) => {
       api
@@ -86,7 +86,7 @@ function Users() {
       .get("Sedes")
       .then((response) => {
         setSedes(response.data);
-        console.log(response.data);
+        /* console.log(response.data); */
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -96,7 +96,7 @@ function Users() {
       .get("Rols")
       .then((response) => {
         setRols(response.data);
-        console.log("Roles: ", response.data);
+        /*  console.log("Roles: ", response.data); */
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -106,7 +106,7 @@ function Users() {
       .get("UsuarioRols")
       .then((response) => {
         setUsuarioRols(response.data);
-        console.log("Tabla intermedia: ", response.data);
+        /* console.log("Tabla intermedia: ", response.data); */
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -141,7 +141,7 @@ function Users() {
   const handleEditModal = (user) => {
     setShowEditModal(true);
     setEditingUsuario(user);
-    console.log(user);
+    /* console.log(user); */
   };
 
   const handleCloseEditModal = () => {
@@ -202,10 +202,12 @@ function Users() {
     return joinedData;
   }
 
-  console.log("joinedUsuario: ", users.forEach(user => {
-    console.log(`Usuario  ${user.nombreUsuario}`,joinTablesForUsuario(user));
-    
-  }));
+  /* console.log(
+    "joinedUsuario: ",
+    users.forEach((user) => {
+      console.log(`Usuario  ${user.nombreUsuario}`, joinTablesForUsuario(user));
+    })
+  ); */
 
   return (
     <>
@@ -336,15 +338,13 @@ function Users() {
                     </td>
                     <td>{user.correo}</td>
                     <td>
-                      {joinTablesForUsuario(user).map(
-                        (joinedData, index) => (
-                          <span key={index}>
+                      {joinTablesForUsuario(user).map((joinedData, index) => (
+                        <span key={index}>
                           {joinedData.rol.nombreRol
                             ? joinedData.rol.nombreRol
                             : "Sin rol asignado"}
-                          {index <
-                            joinTablesForUsuario(user).length -
-                              1 && ", "}
+                          {index < joinTablesForUsuario(user).length - 1 &&
+                            ", "}
                         </span>
                       ))}
                     </td>
@@ -384,7 +384,11 @@ function Users() {
           </Modal.Header>
           <Modal.Body>
             {selectedUser ? (
-              <UsuarioRol user={selectedUser} onSaveRoles={saveRoles} />
+              <UsuarioRol
+                user={selectedUser}
+                joinedUser={joinTablesForUsuario(selectedUser)}
+                onSaveRoles={saveRoles}
+              />
             ) : (
               <div>No hay usuario seleccionado</div>
             )}
