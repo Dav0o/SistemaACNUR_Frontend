@@ -3,8 +3,11 @@ import { Form, Row, Col, Accordion } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import api from "../../api/axios";
 import Modal from "react-bootstrap/Modal";
+import Offcanvas from "react-bootstrap/Offcanvas";
 
 function Envios() {
   const [refresh, setRefresh] = useState(false);
@@ -15,6 +18,8 @@ function Envios() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsEnvio, setDetailsEnvio] = useState({});
   const [mostrarParteAdicional, setMostrarParteAdicional] = useState("");
+  const [selectedEnvio, setSelectedEnvio] = useState(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const idEnvio = useRef(null);
   const destino = useRef(null);
@@ -82,20 +87,15 @@ function Envios() {
     setEditingEnvio(null);
   };
 
-  //Modal Detalles
-  const handleDetailsModal = async (envio) => {
-    try {
-      const response = await api.get(`Envios/${envio.idEnvio}`);
-      setDetailsEnvio(response.data);
-      setShowDetailsModal(true);
-    } catch (error) {
-      console.error("Error al obtener detalles del envío:", error);
-    }
+
+
+  const handleDetailsClick = (envio) => {
+    setSelectedEnvio(envio);
+    setIsDetailsOpen(true);
   };
 
-  const handleCloseDetailsModal = () => {
-    setShowDetailsModal(false);
-    setDetailsEnvio({});
+  const handleCloseDetails = () => {
+    setIsDetailsOpen(false);
   };
 
   const handleUpdate = () => {
@@ -299,15 +299,15 @@ function Envios() {
                     onClick={() => handleEditModal(envio)}
                     className="mt-3"
                   >
-                    Actualizar
+                  <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                   </Button>{" "}
                   <Button
                     variant="info"
                     key={`detalles-${envio.idEnvio}`}
-                    onClick={() => handleDetailsModal(envio)}
-                    className="mt-3"
+                    onClick={() => handleDetailsClick(envio)}
+                    className="mt-3 text-white"
                   >
-                    Detalles
+                  <FontAwesomeIcon icon={faCircleInfo} /> Detalles
                   </Button>
                 </td>
               </tr>
@@ -427,43 +427,44 @@ function Envios() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showDetailsModal} onHide={handleCloseDetailsModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Detalles del envío</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Container>
-            <Row>
-              <Col>
-                <strong>ID de Envío:</strong> {detailsEnvio.idEnvio ?? " "}
-              </Col>
-              <Col>
-                <strong>Destino:</strong> {detailsEnvio.destino ?? " "}
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <strong>Fecha de Envío:</strong>{" "}
-                {detailsEnvio.fechaEnvio ?? " "}
-              </Col>
-              <Col>
-                <strong>Tipo de Ayuda:</strong> {detailsEnvio.tipoAyuda ?? " "}
-              </Col>
-            </Row>
-            <Row>
-              <Col>
-                <strong>Cantidad:</strong> {detailsEnvio.cantidad ?? " "}{" "}
-                {detailsEnvio.unidadMedida?.unidad ?? " "}
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={handleCloseDetailsModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <Offcanvas
+        show={isDetailsOpen}
+        onHide={handleCloseDetails}
+        placement="end"
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Detalles del envío</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          {selectedEnvio && (
+            <div>
+              <div>
+               
+               <div style={{ marginBottom: '20px' }} >
+                <strong>Id:</strong> {selectedEnvio.idEnvio}
+               </div>
+                <div  style={{ marginBottom: '15px' }}>
+                  <strong>Destino:</strong> {selectedEnvio.destino}
+                  </div>
+                  <div  style={{ marginBottom: '15px' }}>
+                  <strong>Fecha de envío:</strong> {selectedEnvio.fechaEnvio}
+                  </div>
+                  <div  style={{ marginBottom: '15px' }}>
+                <strong>Tipo de ayuda:</strong> {selectedEnvio.tipoAyuda}
+                </div>
+                <div  style={{ marginBottom: '15px' }}>
+                <strong>Cantidad:</strong> {selectedEnvio.cantidad}
+                </div>
+                <div  style={{ marginBottom: '15px' }}>
+                <strong>Unidad de Medida:</strong> {selectedEnvio.unidadMedidaId}
+                </div>
+              </div>
+            </div>
+          )}
+        </Offcanvas.Body>
+      </Offcanvas>
+
+     
     </Container>
   );
 }

@@ -5,6 +5,8 @@ import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash, faCircleInfo} from "@fortawesome/free-solid-svg-icons";
 import api from "../../api/axios";
 
 import Modal from "react-bootstrap/Modal";
@@ -261,23 +263,25 @@ function Sedes() {
                   <td>{sede.direccion.estado}</td>
                   <td>
                     <Button
-                      variant="danger"
+                      variant="success"
                       onClick={() => handleDelete(sede.idSede)}
                     >
-                      Eliminar
-                    </Button>
+                     <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
+                    </Button> {" "}
 
                     <Button
-                      variant="success"
+                      variant="danger"
                       onClick={() => handleEditClick(sede)}
                     >
-                      Actualizar
-                    </Button>
+                      <FontAwesomeIcon icon={faTrash} /> Eliminar
+                    </Button> {" "}
+
                     <Button
                       variant="info"
+                      className="text-white"
                       onClick={() => handleDetailsClick(sede)}
                     >
-                      Detalles
+                      <FontAwesomeIcon icon={faCircleInfo} /> Detalles
                     </Button>
                   </td>
                 </tr>

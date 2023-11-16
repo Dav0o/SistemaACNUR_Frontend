@@ -39,6 +39,7 @@ function Users() {
   const [users, setUsers] = useState([]);
   const [sedes, setSedes] = useState([]);
   const [editingUsuario, setEditingUsuario] = useState(null);
+  /* const [selectedRoles, setSelectedRoles] = useState(null); */
 
   const handleShowModal = (user) => {
     setSelectedUser(user);
@@ -48,6 +49,25 @@ function Users() {
   const handleHideModal = () => {
     setShowModal(false);
     setSelectedUser(null);
+    saveRoles();
+  };
+
+  const saveRoles = (selectedRoles) => {
+    // Lógica para guardar los roles aquí
+    console.log("Guardando roles:", selectedRoles);
+    console.log("Usuario:", selectedUser.nombreUsuario);
+
+    selectedRoles.forEach((rol) => {
+      api
+        .post("UsuarioRols", {
+          usuarioDni: selectedUser.dniUsuario,
+          rolId: rol,
+        })
+        .then((response) => console.log(response))
+        .catch((error) => {
+          console.log("Nuestro JSON: ", selectedRoles, "EL ERROR: ", error);
+        });
+    });
   };
 
   useEffect(() => {
@@ -148,130 +168,149 @@ function Users() {
       <Container className="container-fluid">
         <h1 className="h3 mb-2 text-gray-800">Usuarios</h1>
         <p className="mb-4">Lista de usuarios</p>
-        <Accordion defaultActiveKey="1">
-          <Accordion.Item eventKey="0">
-            <Accordion.Header>
-              Click en el botón para crear un usuario
-            </Accordion.Header>
-            <Accordion.Body>
-              <Container>
-                <Row className="mb-2">
-                  <Col>
-                    <Form.Label htmlFor="inputDNI">Cédula</Form.Label>
-                    <Form.Control
-                      type="number"
-                      id="inputDNI"
-                      ref={dniUsuario}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label htmlFor="inputSedeId">Sede</Form.Label>
-                    <Form.Control as="select" id="inputDNI" ref={sedeId}>
-                      <option value="0" key={-1}>
-                        Seleccione una sede
-                      </option>
-                      {sedes.map((sede) => (
-                        <option key={sede.idSede} value={sede.idSede}>
-                          {sede.direccion.ciudad}
+        <div className="card shadow mb-4">
+          <Accordion defaultActiveKey="1">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>
+                Click en el botón para crear un usuario
+              </Accordion.Header>
+              <Accordion.Body>
+                <Container>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputDNI">Cédula</Form.Label>
+                      <Form.Control
+                        type="number"
+                        id="inputDNI"
+                        ref={dniUsuario}
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputSedeId">Sede</Form.Label>
+                      <Form.Control as="select" id="inputDNI" ref={sedeId}>
+                        <option value="0" key={-1}>
+                          Seleccione una sede
                         </option>
-                      ))}
-                    </Form.Control>
-                  </Col>
-                </Row>
-                <Row className="mb-2">
-                  <Col>
-                    <Form.Label htmlFor="inputNombreUsuario">Nombre</Form.Label>
-                    <Form.Control
-                      type="text"
-                      id="inputNombreUsuario"
-                      ref={nombreUsuario}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label htmlFor="inputApellido1">
-                      Primer Apellido
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      id="inputApellido1"
-                      ref={apellido1}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label htmlFor="inputApellido2">
-                      Segundo Apellido
-                    </Form.Label>
-                    <Form.Control
-                      type="text"
-                      id="inputApellido2"
-                      ref={apellido2}
-                    />
-                  </Col>
-                </Row>
+                        {sedes.map((sede) => (
+                          <option key={sede.idSede} value={sede.idSede}>
+                            {sede.direccion.ciudad}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputNombreUsuario">
+                        Nombre
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        id="inputNombreUsuario"
+                        ref={nombreUsuario}
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputApellido1">
+                        Primer Apellido
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        id="inputApellido1"
+                        ref={apellido1}
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputApellido2">
+                        Segundo Apellido
+                      </Form.Label>
+                      <Form.Control
+                        type="text"
+                        id="inputApellido2"
+                        ref={apellido2}
+                      />
+                    </Col>
+                  </Row>
 
-                <Form.Label htmlFor="inputTelefono">Teléfono</Form.Label>
-                <Form.Control type="text" id="inputTelefono" ref={telefono} />
-                <Form.Label htmlFor="inputDireccion">Direccion</Form.Label>
-                <Form.Control type="text" id="inputDireccion" ref={direccion} />
-                <Row>
-                  <Col>
-                    <Form.Label htmlFor="inputEmail">
-                      Correo electrónico
-                    </Form.Label>
-                    <Form.Control type="email" id="inputEmail" ref={correo} />
-                  </Col>
-                  <Col>
-                    <Form.Label htmlFor="inputPassword">Contraseña</Form.Label>
-                    <Form.Control
-                      type="password"
-                      id="inputPassword"
-                      ref={clave}
-                    />
-                  </Col>
-                </Row>
+                  <Form.Label htmlFor="inputTelefono">Teléfono</Form.Label>
+                  <Form.Control type="text" id="inputTelefono" ref={telefono} />
+                  <Form.Label htmlFor="inputDireccion">Direccion</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="inputDireccion"
+                    ref={direccion}
+                  />
+                  <Row>
+                    <Col>
+                      <Form.Label htmlFor="inputEmail">
+                        Correo electrónico
+                      </Form.Label>
+                      <Form.Control type="email" id="inputEmail" ref={correo} />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputPassword">
+                        Contraseña
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        id="inputPassword"
+                        ref={clave}
+                      />
+                    </Col>
+                  </Row>
 
-                <Button variant="primary" onClick={handleSave} className="mt-3">
-                  Guardar
-                </Button>
-              </Container>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Cédula</th>
-              <th>Nombre</th>
-              <th>Apellidos</th>
-              <th>Correo Electrónico</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.dniUsuario}>
-                <td>{user.dniUsuario}</td>
-                <td>{user.nombreUsuario}</td>
-                <td>
-                  {user.apellido1} {user.apellido2}
-                </td>
-                <td>{user.correo}</td>
-                <td>
                   <Button
-                    variant="warning"
-                    className="text-white"
-                    onClick={() => handleShowModal(user)}
+                    variant="primary"
+                    onClick={handleSave}
+                    className="mt-3"
                   >
-                    <FontAwesomeIcon icon={faPersonCirclePlus} /> Roles
-                  </Button>{" "}
-                  <Button variant="success" onClick={()=>handleEditModal(user)}>
-                    <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
+                    Guardar
                   </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+                </Container>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
+          <div className="card-body">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Cédula</th>
+                  <th>Nombre</th>
+                  <th>Apellidos</th>
+                  <th>Correo Electrónico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.dniUsuario}>
+                    <td>{user.dniUsuario}</td>
+                    <td>{user.nombreUsuario}</td>
+                    <td>
+                      {user.apellido1} {user.apellido2}
+                    </td>
+                    <td>{user.correo}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        className="text-white"
+                        onClick={() => handleShowModal(user)}
+                      >
+                        <FontAwesomeIcon icon={faPersonCirclePlus} /> Roles
+                      </Button>{" "}
+                      <Button
+                        variant="success"
+                        onClick={() => handleEditModal(user)}
+                      >
+                        <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </div>
         <Button variant="primary" as={Link} to="/usuario/sanitarios">
           <FontAwesomeIcon icon={faUserDoctor} /> Sanitarios
         </Button>{" "}
@@ -287,24 +326,29 @@ function Users() {
           </Modal.Header>
           <Modal.Body>
             {selectedUser ? (
-              <UsuarioRol user={selectedUser} />
+              <UsuarioRol user={selectedUser} onSaveRoles={saveRoles} />
             ) : (
               <div>No hay usuario seleccionado</div>
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleHideModal}>
-              Cerrar
+            <Button variant="primary" onClick={handleHideModal}>
+              Guardar
             </Button>
           </Modal.Footer>
         </Modal>
-        <Modal show={showEditModal} onHide={handleCloseEditModal} centered>
+        <Modal
+          show={showEditModal}
+          onHide={handleCloseEditModal}
+          centered
+          size="lg"
+        >
           <Modal.Header closeButton>
             <Modal.Title>Editar usuario</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
-              <Row>
+              <Row className="mb-3">
                 <Col>
                   <Form.Label>Cédula</Form.Label>
                   <Form.Control
@@ -335,10 +379,9 @@ function Users() {
                     ))}
                   </Form.Control>
                 </Col>
-
               </Row>
 
-              <Row>
+              <Row className="mb-3">
                 <Col>
                   <Form.Label>Nombre</Form.Label>
                   <Form.Control
@@ -371,7 +414,7 @@ function Users() {
                 </Col>
               </Row>
 
-              <Row>
+              <Row className="mb-3">
                 <Col>
                   <Form.Label>Telefono</Form.Label>
                   <Form.Control
@@ -393,8 +436,8 @@ function Users() {
                 </Col>
               </Row>
 
-              <Row>
-              <Col>
+              <Row className="mb-3">
+                <Col>
                   <Form.Label>Correo electrónico</Form.Label>
                   <Form.Control
                     type="text"
@@ -409,10 +452,10 @@ function Users() {
                     type="password"
                     defaultValue={editingUsuario ? editingUsuario.clave : ""}
                     ref={clave}
+                    readOnly
                   />
                 </Col>
-                </Row>
-
+              </Row>
             </Form>
           </Modal.Body>
           <Modal.Footer>
