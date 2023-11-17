@@ -14,6 +14,7 @@ import InventarioAlimento from "../pages/almacen/components/InventarioAlimento";
 import InventarioMedicina from "../pages/almacen/components/InventarioMedicina";
 import Login from "../pages/auth/Login";
 import UsuarioRol from "../pages/usuario/components/UsuarioRol";
+import Reportes from "../pages/reportes/Reportes";
 
 
 
@@ -40,6 +41,8 @@ const routes = (
 
           <Route path="/alimento" element={<Alimento/>}/>
           <Route path="/medicina" element={<Medicinas/>}/>
+
+          <Route path="/reportes" element={<Reportes/>}/>
 
         </Route>
         <Route path="*" element={<Login />} />

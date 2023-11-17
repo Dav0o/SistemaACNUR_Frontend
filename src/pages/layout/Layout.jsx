@@ -6,7 +6,7 @@ import "../../js/sidebar.js";
 import { NavDropdown } from "react-bootstrap";
 import "../../style/sidebar.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faHouse, faUsers, faHouseFlag, faTruckArrowRight, faWarehouse, faBowlRice, faPrescriptionBottleMedical}from "@fortawesome/free-solid-svg-icons";
+import {faHouse, faUsers, faHouseFlag, faTruckArrowRight, faWarehouse, faBowlRice, faPrescriptionBottleMedical,faChartSimple}from "@fortawesome/free-solid-svg-icons";
 
 function Layout({ children }) {
   const queryClient = new QueryClient();
@@ -42,6 +42,9 @@ function Layout({ children }) {
             </li>
             <li>
               <a href="/medicina"><FontAwesomeIcon icon={faPrescriptionBottleMedical}/> Medicina</a>
+            </li>
+            <li>
+              <a href="/reportes"><FontAwesomeIcon icon={faChartSimple}/> Reportes</a>
             </li>
           </ul>
         </nav>

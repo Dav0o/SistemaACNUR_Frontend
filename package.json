@@ -17,6 +17,12 @@
     "axios": "^1.5.1",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.1",
+    "datatables.net-buttons-dt": "^2.4.2",
+    "datatables.net-dt": "^1.13.8",
+    "datatables.net-responsive-dt": "^2.5.0",
+    "jquery": "^3.7.1",
+    "jszip": "^3.10.1",
+    "pdfmake": "^0.2.8",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.1",
     "react-dom": "^18.2.0",
@@ -25,6 +31,7 @@
     "sweetalert2": "^11.9.0"
   },
   "devDependencies": {
+    "@types/datatables.net-buttons": "^1.4.10",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",
