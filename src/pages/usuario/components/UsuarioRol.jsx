@@ -1,39 +1,58 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import api from "../../../api/axios";
 
 function UsuarioRol(props) {
-  const { user, onSaveRoles } = props;
+  const { user, joinedUser } = props;
   const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
-
-    console.log("user", user);
-
     api.get("Rols").then((res) => {
       setRoles(res.data);
-      console.log(res.data);
     });
-
-    
-  }, [user]);
+  }, []);
 
   const handleRoleChange = (roleId) => {
     if (selectedRoles.includes(roleId)) {
-      setSelectedRoles(selectedRoles.filter((id) => id !== roleId));
+      const updatedRoles = selectedRoles.filter((id) => id !== roleId);
+      setSelectedRoles(updatedRoles);
     } else {
       setSelectedRoles([...selectedRoles, roleId]);
     }
   };
 
   useEffect(() => {
-    return () => {
-      onSaveRoles(selectedRoles);
+    if (joinedUser && joinedUser.length > 0) {
+      const usuarioDni = user.dniUsuario;
+
+      const rolesToDelete = joinedUser
+        .filter((userRole) => !selectedRoles.includes(userRole.rol.idRol))
+        .map((userRole) => userRole.rol.idRol);
+
+      const rolesToAdd = selectedRoles.filter(
+        (roleId) => !joinedUser.some((userRole) => userRole.rol.idRol === roleId)
+      );
+
+      rolesToDelete.forEach((rolId) => {
+        console.log("Enio", {usuarioDni, rolId});
+        api.delete(`UsuarioRols?usuarioDni=${usuarioDni}&rolId=${rolId}`).then((res) => {
+          console.log("Role deleted:", res.data);
+        }).catch((error) => {
+          console.error("Error deleting role:", error);
+          
+        });
+      });
+
+      rolesToAdd.forEach((rolId) => {
+        api.post("UsuarioRols", { usuarioDni, rolId }).then((res) => {
+          console.log("Role added:", res.data);
+        }).catch((error) => {
+          console.error("Error adding role:", error);
+        });
+      });
     }
-  }, [onSaveRoles ,selectedRoles]);
-
-
+  }, [joinedUser, selectedRoles, user]);
 
   if (!user) {
     return <div>No hay usuario seleccionado</div>;
@@ -46,8 +65,8 @@ function UsuarioRol(props) {
         <strong>Cédula:</strong> {user.dniUsuario}
       </p>
       <p>
-        <strong>Nombre:</strong> {user.nombreUsuario} {user.apellido1}{" "}
-        {user.apellido2}
+        <strong>Nombre:</strong> {user.nombreUsuario}{" "}
+        {user.apellido1} {user.apellido2}
       </p>
       <Form>
         {roles.map((role) => (
@@ -56,7 +75,10 @@ function UsuarioRol(props) {
             type="checkbox"
             id={`roleCheckbox-${role.idRol}`}
             label={role.nombreRol}
-            checked={selectedRoles.includes(role.idRol)}
+            checked={
+              selectedRoles.includes(role.idRol) ||
+              joinedUser.some((userRole) => userRole.rol.idRol === role.idRol)
+            }
             onChange={() => handleRoleChange(role.idRol)}
           />
         ))}
