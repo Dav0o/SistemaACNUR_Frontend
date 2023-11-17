@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect} from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
@@ -10,22 +10,20 @@ import api from "../../api/axios";
 import { Modal } from "react-bootstrap";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash, faCircleInfo} from "@fortawesome/free-solid-svg-icons";
 import Offcanvas from "react-bootstrap/Offcanvas";
 
 function Medicinas() {
-  
-
   const idMedicina = useRef();
   const nombreMedicina = useRef();
   const fechaVencimiento = useRef();
 
-
   const [medicinas, setMedicinas] = useState([]);
-  const [editingMedicina , setEditingMedicina] = useState(null);
+  const [editingMedicina, setEditingMedicina] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedMedicina, setSelectedMedicina] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
 
   useEffect(() => {
     api
@@ -42,30 +40,30 @@ function Medicinas() {
     let newMedicina = {
       idMedicina: idMedicina.current.value,
       nombreMedicina: nombreMedicina.current.value,
-      fechaVencimiento: fechaVencimiento.current.value
+      fechaVencimiento: fechaVencimiento.current.value,
     };
 
     console.log(newMedicina);
 
-    api.post("Medicinas", newMedicina)
-    .then((response) => {
-      console.log(response);
-      Swal.fire({
-        title: 'Éxito',
-        text: '¡Medicina guardada exitosamente!',
-        icon: 'success',
+    api
+      .post("Medicinas", newMedicina)
+      .then((response) => {
+        console.log(response);
+        Swal.fire({
+          title: "Éxito",
+          text: "¡Medicina guardada exitosamente!",
+          icon: "success",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          title: "Error",
+          text: "Ocurrió un error al guardar la medicina.",
+          icon: "error",
+        });
       });
-    })
-    .catch((error) => {
-      console.log(error);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrió un error al guardar la medicina.',
-        icon: 'error',
-      });
-    });
-};
-
+  };
 
   //////////////////////----------update------------///////////////////////////7
 
@@ -79,14 +77,11 @@ function Medicinas() {
     setEditingMedicina(null);
   };
 
-
   const handleUpdate = () => {
-
     const updatedMedicina = {
       idMedicina: editingMedicina.idMedicina,
       nombreMedicina: nombreMedicina.current.value,
-      fechaVencimiento: fechaVencimiento.current.value
-      
+      fechaVencimiento: fechaVencimiento.current.value,
     };
 
     api
@@ -115,8 +110,6 @@ function Medicinas() {
   };
   ///////////////////---------------------------------//////////////////////////////
 
-
-  
   //////////////////////----------delete------------///////////////////////////7
 
   const handleDelete = (medicinaId) => {
@@ -131,12 +124,11 @@ function Medicinas() {
       cancelButtonText: "Cancelar",
     }).then((result) => {
       if (result.isConfirmed) {
-
         api
           .delete(`Medicinas?Id=${medicinaId}`)
           .then((response) => {
             console.log(response);
-          
+
             const updatedMedicinas = medicinas.filter(
               (medicina) => medicina.idMedicina !== medicinaId
             );
@@ -150,9 +142,6 @@ function Medicinas() {
   };
   ///////////////////---------------------------------//////////////////////////////
 
-
-
-
   ///////////////////---------------Details-------------//////////////////////////////
 
   const handleDetailsClick = (medicina) => {
@@ -165,8 +154,6 @@ function Medicinas() {
   };
 
   ///////////////////---------------------------------//////////////////////////////
-
-
 
   return (
     <Container className="container-fluid">
@@ -183,23 +170,39 @@ function Medicinas() {
               <Container>
                 <Row className="mb-2">
                   <Col>
-                    <Form.Label htmlFor="inputIdMedicina">Id Medicina</Form.Label>
-                    <Form.Control type="text" id="inputIdMedicina" ref={idMedicina} />
+                    <Form.Label htmlFor="inputIdMedicina">
+                      Id Medicina
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputIdMedicina"
+                      ref={idMedicina}
+                    />
                   </Col>
                   <Col>
-                    <Form.Label htmlFor="inputNombreMedicina">Nombre</Form.Label>
-                    <Form.Control type="text" id="inputNombreMedicina" ref={nombreMedicina} />
+                    <Form.Label htmlFor="inputNombreMedicina">
+                      Nombre
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      id="inputNombreMedicina"
+                      ref={nombreMedicina}
+                    />
                   </Col>
                 </Row>
                 <Row className="mb-2">
                   <Col>
-                    <Form.Label htmlFor="inputFechaVencimiento">Fecha Vencimiento</Form.Label>
-                    <Form.Control type="date" id="inputFechaVencimiento" ref={fechaVencimiento} />
+                    <Form.Label htmlFor="inputFechaVencimiento">
+                      Fecha Vencimiento
+                    </Form.Label>
+                    <Form.Control
+                      type="date"
+                      id="inputFechaVencimiento"
+                      ref={fechaVencimiento}
+                    />
                   </Col>
                 </Row>
-                <Row>
-                  {""}
-                </Row>
+                <Row>{""}</Row>
                 <Button variant="primary" onClick={handleSave} className="mt-3">
                   Guardar
                 </Button>
@@ -224,15 +227,26 @@ function Medicinas() {
                   <td>{medicina.nombreMedicina}</td>
                   <td>{medicina.fechaVencimiento}</td>
                   <td>
-                  <Button variant="danger" onClick={() => handleDelete(medicina.idMedicina)}>
-                      Eliminar</Button>{" "}
-
-                      <Button variant="success" onClick={() => handleEditClick(medicina)}>
-                      Actualizar
+                    {" "}
+                    <Button
+                      variant="success"
+                      onClick={() => handleEditClick(medicina)}
+                    >
+                   <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button>{" "}
-
-                    <Button variant="info"onClick={() => handleDetailsClick(medicina)}>
-                    Detalles</Button>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDelete(medicina.idMedicina)}
+                    >
+                      <FontAwesomeIcon icon={faTrash} /> Eliminar
+                    </Button>{" "}
+                    <Button
+                      variant="info"
+                      className="text-white"
+                      onClick={() => handleDetailsClick(medicina)}
+                    >
+                      <FontAwesomeIcon icon={faCircleInfo} /> Detalles
+                    </Button>
                   </td>
                 </tr>
               ))}
@@ -251,7 +265,9 @@ function Medicinas() {
               <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={editingMedicina ? editingMedicina.nombreMedicina : ""}
+                defaultValue={
+                  editingMedicina ? editingMedicina.nombreMedicina : ""
+                }
                 ref={nombreMedicina}
               />
             </Form.Group>
@@ -259,23 +275,23 @@ function Medicinas() {
               <Form.Label>Fecha Vencimiento</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={editingMedicina ? editingMedicina.fechaVencimiento : ""}
+                defaultValue={
+                  editingMedicina ? editingMedicina.fechaVencimiento : ""
+                }
                 ref={fechaVencimiento}
               />
             </Form.Group>
-          
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger" onClick={handleCloseEditModal}>
             Cancelar
           </Button>
-          <Button variant="success" onClick={handleUpdate}>
+          <Button variant="dark" onClick={handleUpdate}>
             Actualizar
           </Button>
         </Modal.Footer>
       </Modal>
-
 
       <Offcanvas
         show={isDetailsOpen}
@@ -289,28 +305,23 @@ function Medicinas() {
           {selectedMedicina && (
             <div>
               <div>
-               
-               <div style={{ marginBottom: '20px' }} >
-                <strong>ID:</strong> {selectedMedicina.idMedicina}
-               </div>
-                <div  style={{ marginBottom: '15px' }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <strong>ID:</strong> {selectedMedicina.idMedicina}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
                   <strong>Nombre:</strong> {selectedMedicina.nombreMedicina}
-                  </div>
-                  <div  style={{ marginBottom: '15px' }}>
-                  <strong>Fecha de Vencimiento:</strong> {selectedMedicina.fechaVencimiento}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Fecha de Vencimiento:</strong>{" "}
+                  {selectedMedicina.fechaVencimiento}
                 </div>
               </div>
             </div>
           )}
         </Offcanvas.Body>
       </Offcanvas>
-
-
-
-
-
     </Container>
   );
 }
 
-export default Medicinas
+export default Medicinas;

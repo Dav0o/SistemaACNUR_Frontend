@@ -38,6 +38,8 @@ function Users() {
 
   const [users, setUsers] = useState([]);
   const [sedes, setSedes] = useState([]);
+  const [rols, setRols] = useState([]);
+  const [usuarioRols, setUsuarioRols] = useState([]);
   const [editingUsuario, setEditingUsuario] = useState(null);
   /* const [selectedRoles, setSelectedRoles] = useState(null); */
 
@@ -85,6 +87,26 @@ function Users() {
       .then((response) => {
         setSedes(response.data);
         console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+
+    api
+      .get("Rols")
+      .then((response) => {
+        setRols(response.data);
+        console.log("Roles: ", response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+
+    api
+      .get("UsuarioRols")
+      .then((response) => {
+        setUsuarioRols(response.data);
+        console.log("Tabla intermedia: ", response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -162,6 +184,28 @@ function Users() {
         console.log(error);
       });
   };
+
+  function joinTablesForUsuario(usuario) {
+    // Unir usuarioRols con profesiones
+    const joinedData = usuarioRols
+      .filter((usuarioRol) => usuarioRol.usuarioDni === usuario.dniUsuario)
+      .map((usuarioRol) => {
+        const rol = rols.find((rol) => rol.idRol === usuarioRol.rolId);
+
+        return {
+          idUsuarioRol: usuarioRol.idUsuarioRol,
+          rol: rol ? { ...rol } : null,
+          usuario: usuario ? { ...usuario } : null,
+        };
+      });
+
+    return joinedData;
+  }
+
+  console.log("joinedUsuario: ", users.forEach(user => {
+    console.log(`Usuario  ${user.nombreUsuario}`,joinTablesForUsuario(user));
+    
+  }));
 
   return (
     <>
@@ -278,6 +322,7 @@ function Users() {
                   <th>Nombre</th>
                   <th>Apellidos</th>
                   <th>Correo Electrónico</th>
+                  <th>Roles</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -290,6 +335,19 @@ function Users() {
                       {user.apellido1} {user.apellido2}
                     </td>
                     <td>{user.correo}</td>
+                    <td>
+                      {joinTablesForUsuario(user).map(
+                        (joinedData, index) => (
+                          <span key={index}>
+                          {joinedData.rol.nombreRol
+                            ? joinedData.rol.nombreRol
+                            : "Sin rol asignado"}
+                          {index <
+                            joinTablesForUsuario(user).length -
+                              1 && ", "}
+                        </span>
+                      ))}
+                    </td>
                     <td>
                       <Button
                         variant="warning"

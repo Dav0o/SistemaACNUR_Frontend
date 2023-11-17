@@ -264,14 +264,14 @@ function Sedes() {
                   <td>
                     <Button
                       variant="success"
-                      onClick={() => handleDelete(sede.idSede)}
+                      onClick={() => handleEditClick(sede)}
                     >
                      <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button> {" "}
 
                     <Button
                       variant="danger"
-                      onClick={() => handleEditClick(sede)}
+                      onClick={() => handleDelete(sede.idSede)}
                     >
                       <FontAwesomeIcon icon={faTrash} /> Eliminar
                     </Button> {" "}

@@ -8,6 +8,8 @@ import api from "../../../api/axios";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Accordion from "react-bootstrap/Accordion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import "sweetalert2/dist/sweetalert2.min.css";
 import { Modal } from "react-bootstrap";
@@ -268,18 +270,18 @@ function Socio() {
                   <td>
 
                     <Button
-                      variant="warning"
+                      variant="success"
                       className="bg-gradient-warning mr-1 text-light"
                       onClick={() => handleEditClick(socio)}
                     >
-                      <i class="bi bi-pencil-square"></i>
+                     <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button>{" "}
                     <Button
                       variant="danger"
                       className="bg-gradient-danger mr-1 text-light"
                       onClick={() => handleDelete(socio.idSocio)}
                     >
-                      <i class="bi bi-trash"></i>
+                     <FontAwesomeIcon icon={faTrash} /> Eliminar
 
                     </Button>{" "}
 
