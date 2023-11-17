@@ -15,18 +15,23 @@ function Envios() {
   const [unidadMedidas, setUnidadMedidas] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingEnvio, setEditingEnvio] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [detailsEnvio, setDetailsEnvio] = useState({});
+/*   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsEnvio, setDetailsEnvio] = useState({}); */
   const [mostrarParteAdicional, setMostrarParteAdicional] = useState("");
   const [selectedEnvio, setSelectedEnvio] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState(new Set());
+  const [users, setUsers] = useState([]);
+  const [almacenes, setAlmacenes] = useState([]);
+  const [inventarrioAlimentos, setInventarioAlimentos] = useState([]);
 
   const idEnvio = useRef(null);
   const destino = useRef(null);
   const fechaEnvio = useRef(null);
   const tipoAyuda = useRef(null);
-  const cantidad = useRef(null);
-  const unidadMedidaId = useRef(null);
+  const cantidad = useRef(0);
+  const unidadMedidaId = useRef(1);
+  /* const usuario = useRef(null); */
 
   useEffect(() => {
     api
@@ -46,6 +51,37 @@ function Envios() {
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
+
+    api
+      .get("Usuario")
+      .then((response) => {
+        setUsers(response.data);
+        /* console.log(response.data); */
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+
+    api
+      .get("Almacens")
+      .then((response) => {
+        setAlmacenes(response.data);
+        console.log("Almacenes: ",response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+
+      api
+      .get("InventarioAlimentos")
+      .then((response) => {
+        setInventarioAlimentos(response.data);
+        console.log("Inventario de Alimentos: ",response.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener datos:", error);
+      });
+      
   }, [refresh]);
 
   const handleSave = () => {
@@ -57,6 +93,14 @@ function Envios() {
       cantidad: cantidad.current.value,
       unidadMedidaId: unidadMedidaId.current.value,
     };
+
+    if (mostrarParteAdicional === "Humanitaria") {
+      newEnvio = {
+        ...newEnvio,
+        cantidad: 0,
+        unidadMedidaId: 1,
+      };
+    }
 
     api
       .post("Envios", newEnvio)
@@ -74,6 +118,22 @@ function Envios() {
       .catch((error) => {
         console.log(error);
       });
+
+    if (mostrarParteAdicional === "Humanitaria") {
+      [...usuariosSeleccionados].forEach((dniUsuario) => {
+        api
+          .post("EnvioHumanitarios", {
+            idEnvio: idEnvio.current.value,
+            dniUsuario: dniUsuario,
+          })
+          .then((response) => {
+            console.log(response.data);
+          })
+          .catch((error) => {
+            console.log("Error en Tabla Intermedia: ",error);
+          });
+      });
+    }
   };
 
   //Modal Editar
@@ -86,8 +146,6 @@ function Envios() {
     setShowEditModal(false);
     setEditingEnvio(null);
   };
-
-
 
   const handleDetailsClick = (envio) => {
     setSelectedEnvio(envio);
@@ -139,6 +197,23 @@ function Envios() {
     } else if (valorTipoAyuda === "Alimentos") {
       setMostrarParteAdicional("Alimentos");
     }
+  };
+
+  const handleCheckboxChange = (dniUsuario) => {
+    setUsuariosSeleccionados((prevSelected) => {
+      const updatedSet = new Set(prevSelected);
+
+      if (updatedSet.has(dniUsuario)) {
+        updatedSet.delete(dniUsuario);
+        console.log("Eliminado", dniUsuario);
+      } else {
+        updatedSet.add(dniUsuario);
+        console.log("Agregado", dniUsuario);
+      }
+
+
+      return updatedSet;
+    });
   };
 
   return (
@@ -203,62 +278,117 @@ function Envios() {
                     </Form.Control>
                   </Col>
                 </Row>
-                <Row className="mb-2">
-                  <Col>
-                    <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
-                    <Form.Control
-                      type="number"
-                      id="inputCantidad"
-                      ref={cantidad}
-                    />
-                  </Col>
-                  <Col>
-                    <Form.Label htmlFor="inputUnidadMedida">
-                      Unidad de Medida
-                    </Form.Label>
-                    <Form.Control
-                      as="select"
-                      id="inputUnidadMedida"
-                      ref={unidadMedidaId}
-                    >
-                      <option value="" key={0}>
-                        Seleccione una unidad de medida
-                      </option>
-                      {unidadMedidas.map((unidad) => (
-                        <option
-                          key={unidad.idUnidadMedida}
-                          value={unidad.idUnidadMedida}
-                        >
-                          {unidad.unidad}
-                        </option>
-                      ))}
-                    </Form.Control>
-                  </Col>
-                </Row>
-
+               
 
                 {mostrarParteAdicional === "Humanitaria" && (
-                <Row>
-                  <Col>
-                    <Form.Label htmlFor="input">
-
-                    </Form.Label>
-                  </Col>
-                </Row>
+                  <Row>
+                    <Col>
+                      <Form.Label htmlFor="input">
+                        <strong>Humanitaria</strong>
+                      </Form.Label>
+                      {users.map((user) => (
+                        <Form.Check
+                          key={user.dniUsuario}
+                          type="checkbox"
+                          label={`${user.dniUsuario}-${user.nombreUsuario} ${user.apellido1}`}
+                          id={`checkbox-${user.dniUsuario}`}
+                          checked={usuariosSeleccionados.has(user.dniUsuario)}
+                          onChange={() => handleCheckboxChange(user.dniUsuario)}
+                        />
+                      ))}
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="input">
+                        <strong>Usuarios seleccionados</strong>
+                      </Form.Label>
+                      <ul>
+                        {[...usuariosSeleccionados].map((dniUsuario) => (
+                          <li key={dniUsuario}>
+                            {
+                              users.find(
+                                (user) => user.dniUsuario === dniUsuario
+                              )?.nombreUsuario
+                            }{" "}
+                            {
+                              users.find(
+                                (user) => user.dniUsuario === dniUsuario
+                              )?.apellido1
+                            }
+                          </li>
+                        ))}
+                      </ul>
+                    </Col>
+                  </Row>
                 )}
-
 
                 {mostrarParteAdicional === "Medicamentos" && (
-                  <div>
-                    </div>  
+                   <Row className="mb-2">
+                   <Col>
+                     <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
+                     <Form.Control
+                       type="number"
+                       id="inputCantidad"
+                       ref={cantidad}
+                     />
+                   </Col>
+                   <Col>
+                     <Form.Label htmlFor="inputUnidadMedida">
+                       Unidad de Medida
+                     </Form.Label>
+                     <Form.Control
+                       as="select"
+                       id="inputUnidadMedida"
+                       ref={unidadMedidaId}
+                     >
+                       <option value="" key={0}>
+                         Seleccione una unidad de medida
+                       </option>
+                       {unidadMedidas.map((unidad) => (
+                         <option
+                           key={unidad.idUnidadMedida}
+                           value={unidad.idUnidadMedida}
+                         >
+                           {unidad.unidad}
+                         </option>
+                       ))}
+                     </Form.Control>
+                   </Col>
+                 </Row>
                 )}
 
-
                 {mostrarParteAdicional === "Alimentos" && (
-                  <div>
-                    {/* Aquí va la parte de HTML que se mostrará cuando el tipo de ayuda sea 'Alimentos' o 'Medicinas' */}
-                    <p>Contenido para alimentos...</p>
-                  </div>
+                   <Row className="mb-2">
+                   <Col>
+                     <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
+                     <Form.Control
+                       type="number"
+                       id="inputCantidad"
+                       ref={cantidad}
+                     />
+                   </Col>
+                   <Col>
+                     <Form.Label htmlFor="inputUnidadMedida">
+                       Unidad de Medida
+                     </Form.Label>
+                     <Form.Control
+                       as="select"
+                       id="inputUnidadMedida"
+                       ref={unidadMedidaId}
+                     >
+                       <option value="" key={0}>
+                         Seleccione una unidad de medida
+                       </option>
+                       {unidadMedidas.map((unidad) => (
+                         <option
+                           key={unidad.idUnidadMedida}
+                           value={unidad.idUnidadMedida}
+                         >
+                           {unidad.unidad}
+                         </option>
+                       ))}
+                     </Form.Control>
+                   </Col>
+                 </Row>
                 )}
 
                 <Button variant="primary" onClick={handleSave} className="mt-3">
@@ -299,7 +429,7 @@ function Envios() {
                     onClick={() => handleEditModal(envio)}
                     className="mt-3"
                   >
-                  <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
+                    <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                   </Button>{" "}
                   <Button
                     variant="info"
@@ -307,7 +437,7 @@ function Envios() {
                     onClick={() => handleDetailsClick(envio)}
                     className="mt-3 text-white"
                   >
-                  <FontAwesomeIcon icon={faCircleInfo} /> Detalles
+                    <FontAwesomeIcon icon={faCircleInfo} /> Detalles
                   </Button>
                 </td>
               </tr>
@@ -439,32 +569,30 @@ function Envios() {
           {selectedEnvio && (
             <div>
               <div>
-               
-               <div style={{ marginBottom: '20px' }} >
-                <strong>Id:</strong> {selectedEnvio.idEnvio}
-               </div>
-                <div  style={{ marginBottom: '15px' }}>
+                <div style={{ marginBottom: "20px" }}>
+                  <strong>Id:</strong> {selectedEnvio.idEnvio}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
                   <strong>Destino:</strong> {selectedEnvio.destino}
-                  </div>
-                  <div  style={{ marginBottom: '15px' }}>
+                </div>
+                <div style={{ marginBottom: "15px" }}>
                   <strong>Fecha de envío:</strong> {selectedEnvio.fechaEnvio}
-                  </div>
-                  <div  style={{ marginBottom: '15px' }}>
-                <strong>Tipo de ayuda:</strong> {selectedEnvio.tipoAyuda}
                 </div>
-                <div  style={{ marginBottom: '15px' }}>
-                <strong>Cantidad:</strong> {selectedEnvio.cantidad}
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Tipo de ayuda:</strong> {selectedEnvio.tipoAyuda}
                 </div>
-                <div  style={{ marginBottom: '15px' }}>
-                <strong>Unidad de Medida:</strong> {selectedEnvio.unidadMedidaId}
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Cantidad:</strong> {selectedEnvio.cantidad}
+                </div>
+                <div style={{ marginBottom: "15px" }}>
+                  <strong>Unidad de Medida:</strong>{" "}
+                  {selectedEnvio.unidadMedidaId}
                 </div>
               </div>
             </div>
           )}
         </Offcanvas.Body>
       </Offcanvas>
-
-     
     </Container>
   );
 }

@@ -184,12 +184,7 @@ function Users() {
     return joinedData;
   }
 
-  /* console.log(
-    "joinedUsuario: ",
-    users.forEach((user) => {
-      console.log(`Usuario  ${user.nombreUsuario}`, joinTablesForUsuario(user));
-    })
-  ); */
+
 
   return (
     <>
