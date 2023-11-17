@@ -19,7 +19,6 @@ import UsuarioRol from "../pages/usuario/components/UsuarioRol";
 
 const routes = (
     <> 
-
         <Route path="/login" element={<Login/>}/>
 
         <Route path="/" element={<Layout />}>
@@ -41,7 +40,9 @@ const routes = (
 
           <Route path="/alimento" element={<Alimento/>}/>
           <Route path="/medicina" element={<Medicinas/>}/>
+
         </Route>
+        <Route path="*" element={<Login />} />
     </>
 )
 

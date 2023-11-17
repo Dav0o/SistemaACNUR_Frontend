@@ -54,6 +54,11 @@ function UsuarioRol(props) {
     }
   }, [joinedUser, selectedRoles, user]);
 
+  useEffect(() => {
+    setSelectedRoles([]);
+  }, [user]);
+  
+
   if (!user) {
     return <div>No hay usuario seleccionado</div>;
   }
