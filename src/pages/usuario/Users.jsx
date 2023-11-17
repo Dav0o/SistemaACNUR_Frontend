@@ -51,25 +51,7 @@ function Users() {
   const handleHideModal = () => {
     setShowModal(false);
     setSelectedUser(null);
-    saveRoles();
-  };
-
-  const saveRoles = (selectedRoles) => {
-    // Lógica para guardar los roles aquí
-    /* console.log("Guardando roles:", selectedRoles);
-    console.log("Usuario:", selectedUser.nombreUsuario); */
-
-    selectedRoles.forEach((rol) => {
-      api
-        .post("UsuarioRols", {
-          usuarioDni: selectedUser.dniUsuario,
-          rolId: rol,
-        })
-        .then((response) => console.log(response))
-        .catch((error) => {
-          console.log("Nuestro JSON: ", selectedRoles, "EL ERROR: ", error);
-        });
-    });
+    setRefresh(!refresh);
   };
 
   useEffect(() => {
@@ -387,7 +369,7 @@ function Users() {
               <UsuarioRol
                 user={selectedUser}
                 joinedUser={joinTablesForUsuario(selectedUser)}
-                onSaveRoles={saveRoles}
+                /* onSaveRoles={saveRoles} */
               />
             ) : (
               <div>No hay usuario seleccionado</div>
