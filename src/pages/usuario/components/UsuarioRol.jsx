@@ -3,14 +3,11 @@ import { Form } from "react-bootstrap";
 import api from "../../../api/axios";
 
 function UsuarioRol(props) {
-  const { user, joinedUser } = props;
-  const [roles, setRoles] = useState([]);
+  const { user, joinedUser, roles } = props;
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   useEffect(() => {
-    api.get("Rols").then((res) => {
-      setRoles(res.data);
-    });
+    setSelectedRoles([]);
   }, []);
 
   const handleRoleChange = (roleId) => {
@@ -35,12 +32,10 @@ function UsuarioRol(props) {
       );
 
       rolesToDelete.forEach((rolId) => {
-        console.log("Enio", {usuarioDni, rolId});
         api.delete(`UsuarioRols?usuarioDni=${usuarioDni}&rolId=${rolId}`).then((res) => {
           console.log("Role deleted:", res.data);
         }).catch((error) => {
           console.error("Error deleting role:", error);
-          
         });
       });
 
@@ -53,11 +48,6 @@ function UsuarioRol(props) {
       });
     }
   }, [joinedUser, selectedRoles, user]);
-
-  useEffect(() => {
-    setSelectedRoles([]);
-  }, [user]);
-  
 
   if (!user) {
     return <div>No hay usuario seleccionado</div>;

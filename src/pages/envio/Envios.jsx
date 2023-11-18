@@ -15,7 +15,7 @@ function Envios() {
   const [unidadMedidas, setUnidadMedidas] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingEnvio, setEditingEnvio] = useState(null);
-/*   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  /*   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [detailsEnvio, setDetailsEnvio] = useState({}); */
   const [mostrarParteAdicional, setMostrarParteAdicional] = useState("");
   const [selectedEnvio, setSelectedEnvio] = useState(null);
@@ -66,22 +66,21 @@ function Envios() {
       .get("Almacens")
       .then((response) => {
         setAlmacenes(response.data);
-        console.log("Almacenes: ",response.data);
+        console.log("Almacenes: ", response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
 
-      api
+    api
       .get("InventarioAlimentos")
       .then((response) => {
         setInventarioAlimentos(response.data);
-        console.log("Inventario de Alimentos: ",response.data);
+        console.log("Inventario de Alimentos: ", response.data);
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
       });
-      
   }, [refresh]);
 
   const handleSave = () => {
@@ -105,6 +104,23 @@ function Envios() {
     api
       .post("Envios", newEnvio)
       .then((response) => {
+        console.log(response.data);
+        Swal.fire("Éxitosamente", "Administrador ha sido guardado.", "success");
+      })
+      .catch((error) => {
+        console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
+
+        Swal.fire(
+          "Error!",
+          "Ha habido un error al guardar el administrador, revisa la información digitada!.",
+          "error"
+        );
+        setRefresh(!refresh);
+
+
+      })
+      .catch((error) => {
+        console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
         console.log(response.data);
         setRefresh(!refresh);
 
@@ -130,10 +146,16 @@ function Envios() {
             console.log(response.data);
           })
           .catch((error) => {
-            console.log("Error en Tabla Intermedia: ",error);
+            console.log("Error en Tabla Intermedia: ", error);
           });
       });
     }
+    idEnvio.current.value = "";
+    destino.current.value = "";
+    fechaEnvio.current.value = "";
+    tipoAyuda.current.value = "";
+    cantidad.current.value = "";
+    unidadMedidaId.current.value = "";
   };
 
   //Modal Editar
@@ -211,7 +233,6 @@ function Envios() {
         console.log("Agregado", dniUsuario);
       }
 
-
       return updatedSet;
     });
   };
@@ -278,7 +299,6 @@ function Envios() {
                     </Form.Control>
                   </Col>
                 </Row>
-               
 
                 {mostrarParteAdicional === "Humanitaria" && (
                   <Row>
@@ -322,73 +342,73 @@ function Envios() {
                 )}
 
                 {mostrarParteAdicional === "Medicamentos" && (
-                   <Row className="mb-2">
-                   <Col>
-                     <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
-                     <Form.Control
-                       type="number"
-                       id="inputCantidad"
-                       ref={cantidad}
-                     />
-                   </Col>
-                   <Col>
-                     <Form.Label htmlFor="inputUnidadMedida">
-                       Unidad de Medida
-                     </Form.Label>
-                     <Form.Control
-                       as="select"
-                       id="inputUnidadMedida"
-                       ref={unidadMedidaId}
-                     >
-                       <option value="" key={0}>
-                         Seleccione una unidad de medida
-                       </option>
-                       {unidadMedidas.map((unidad) => (
-                         <option
-                           key={unidad.idUnidadMedida}
-                           value={unidad.idUnidadMedida}
-                         >
-                           {unidad.unidad}
-                         </option>
-                       ))}
-                     </Form.Control>
-                   </Col>
-                 </Row>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
+                      <Form.Control
+                        type="number"
+                        id="inputCantidad"
+                        ref={cantidad}
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputUnidadMedida">
+                        Unidad de Medida
+                      </Form.Label>
+                      <Form.Control
+                        as="select"
+                        id="inputUnidadMedida"
+                        ref={unidadMedidaId}
+                      >
+                        <option value="" key={0}>
+                          Seleccione una unidad de medida
+                        </option>
+                        {unidadMedidas.map((unidad) => (
+                          <option
+                            key={unidad.idUnidadMedida}
+                            value={unidad.idUnidadMedida}
+                          >
+                            {unidad.unidad}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
                 )}
 
                 {mostrarParteAdicional === "Alimentos" && (
-                   <Row className="mb-2">
-                   <Col>
-                     <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
-                     <Form.Control
-                       type="number"
-                       id="inputCantidad"
-                       ref={cantidad}
-                     />
-                   </Col>
-                   <Col>
-                     <Form.Label htmlFor="inputUnidadMedida">
-                       Unidad de Medida
-                     </Form.Label>
-                     <Form.Control
-                       as="select"
-                       id="inputUnidadMedida"
-                       ref={unidadMedidaId}
-                     >
-                       <option value="" key={0}>
-                         Seleccione una unidad de medida
-                       </option>
-                       {unidadMedidas.map((unidad) => (
-                         <option
-                           key={unidad.idUnidadMedida}
-                           value={unidad.idUnidadMedida}
-                         >
-                           {unidad.unidad}
-                         </option>
-                       ))}
-                     </Form.Control>
-                   </Col>
-                 </Row>
+                  <Row className="mb-2">
+                    <Col>
+                      <Form.Label htmlFor="inputCantidad">Cantidad</Form.Label>
+                      <Form.Control
+                        type="number"
+                        id="inputCantidad"
+                        ref={cantidad}
+                      />
+                    </Col>
+                    <Col>
+                      <Form.Label htmlFor="inputUnidadMedida">
+                        Unidad de Medida
+                      </Form.Label>
+                      <Form.Control
+                        as="select"
+                        id="inputUnidadMedida"
+                        ref={unidadMedidaId}
+                      >
+                        <option value="" key={0}>
+                          Seleccione una unidad de medida
+                        </option>
+                        {unidadMedidas.map((unidad) => (
+                          <option
+                            key={unidad.idUnidadMedida}
+                            value={unidad.idUnidadMedida}
+                          >
+                            {unidad.unidad}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
                 )}
 
                 <Button variant="primary" onClick={handleSave} className="mt-3">
@@ -587,6 +607,9 @@ function Envios() {
                 <div style={{ marginBottom: "15px" }}>
                   <strong>Unidad de Medida:</strong>{" "}
                   {selectedEnvio.unidadMedidaId}
+                </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <strong>Id:</strong> {selectedEnvio.idEnvio}
                 </div>
               </div>
             </div>

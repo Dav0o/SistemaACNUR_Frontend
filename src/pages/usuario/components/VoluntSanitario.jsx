@@ -49,7 +49,7 @@ function VoluntSanitario() {
       .get("Usuario")
       .then((response) => {
         setUsuarios(response.data);
-        console.log("Usuario", response.data);
+        /* console.log("Usuario", response.data); */
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -59,7 +59,7 @@ function VoluntSanitario() {
       .get("Profesiones")
       .then((response) => {
         setProfesiones(response.data);
-        console.log("Profesiones", response.data);
+        /* console.log("Profesiones", response.data); */
       })
       .catch((error) => {
         console.error("Error al obtener datos:", error);
@@ -92,7 +92,28 @@ function VoluntSanitario() {
       .post("VoluntarioSanitarios", newUVoluntarioSanitario)
       .then((response) => {
         console.log("Volunatrio Sanitario Enviado", newUVoluntarioSanitario);
-        console.log(response);
+        console.log(response.data);
+        api
+          .post("ProfesionVoluntarios", newProfesion)
+          .then((response) => {
+            Swal.fire("Éxitosamente", "Voluntario Sanitario ha sido guardado.", "success");
+          })
+          .catch((error) => {
+            console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
+
+            Swal.fire(
+              "Error!",
+              "Ha habido un error al guardar Voluntario Sanitario, revisa la información digitada!.",
+              "error"
+            );
+            console.log(response.data);
+            console.log("Profesion Enviada", newProfesion);
+            setRefresh(!refresh);
+          })
+          .catch((error) => {
+            console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
+            /* setRefresh(!refresh); */
+          });
       })
       .catch((error) => {
         console.log(
@@ -101,19 +122,7 @@ function VoluntSanitario() {
           "EL ERROR: ",
           error
         );
-        setRefresh(!refresh);
-      });
-
-    api
-      .post("ProfesionVoluntarios", newProfesion)
-      .then((response) => {
-        console.log(response);
-        console.log("Profesion Enviada", newProfesion);
-        setRefresh(!refresh);
-      })
-      .catch((error) => {
-        console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
-        setRefresh(!refresh);
+        /* setRefresh(!refresh); */
       });
 
     idVoluntarioSanitario.current.value = "";
@@ -170,7 +179,8 @@ function VoluntSanitario() {
             setAlimentos(updatedVoluntarioSanitarios);
           })
           .catch((error) => {
-            console.error("Error al eliminar el alimento:", error);
+            console.error("Error al eliminar:", error);
+            setRefresh(!refresh);
           });
       }
     });
@@ -212,6 +222,10 @@ function VoluntSanitario() {
           (prof) => prof.idProfesion === profesionVoluntario.profesionId
         );
 
+        /*         console.log(`Voluntario: ${match(voluntario).nombreUsuario}`,{idProfesionVoluntario: profesionVoluntario.idProfesionVoluntario,
+          profesion: profesion ? { ...profesion } : null,
+          voluntarioSanitario: voluntario ? { ...voluntario } : null,}) */
+
         return {
           idProfesionVoluntario: profesionVoluntario.idProfesionVoluntario,
           profesion: profesion ? { ...profesion } : null,
@@ -221,15 +235,6 @@ function VoluntSanitario() {
 
     return joinedData;
   }
-
-  console.log(
-    "joinedData",
-    joinTablesForVoluntario({
-      idVoluntarioSanitario: 1,
-      disponible: true,
-      usuarioDni: 118780796,
-    })
-  );
 
   return (
     <>

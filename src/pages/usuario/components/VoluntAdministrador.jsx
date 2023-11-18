@@ -79,8 +79,28 @@ function VoluntAdministrador() {
     api
       .post("VoluntarioAdministradors", newUVoluntarioAdministrador)
       .then((response) => {
+        api
+          .post("ProfesionVoluntarios", newProfesion)
+          .then((response) => {
+            Swal.fire("Éxitosamente", "Administrador ha sido guardado.", "success");
+          })
+          .catch((error) => {
+            console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
+
+            Swal.fire(
+              "Error!",
+              "Ha habido un error al guardar el administrador, revisa la información digitada!.",
+              "error"
+            );
+            console.log(response);
+            setRefresh(!refresh);
+          })
+          .catch((error) => {
+            console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
+            setRefresh(!refresh);
+          });
         console.log(response);
-        setRefresh(!refresh);
+        /* setRefresh(!refresh); */
       })
       .catch((error) => {
         console.log(
@@ -89,17 +109,6 @@ function VoluntAdministrador() {
           "EL ERROR: ",
           error
         );
-        setRefresh(!refresh);
-      });
-
-    api
-      .post("ProfesionVoluntarios", newProfesion)
-      .then((response) => {
-        console.log(response);
-        setRefresh(!refresh);
-      })
-      .catch((error) => {
-        console.log("Nuestro JSON: ", newProfesion, "EL ERROR: ", error);
         setRefresh(!refresh);
       });
   };
@@ -221,13 +230,14 @@ function VoluntAdministrador() {
                       >
                         <option value=" " key={-1}>
                           Seleccione un usuario
-                          </option> 
+                        </option>
                         {usuarios.map((usuario) => (
                           <option
                             value={usuario.dniUsuario}
                             key={usuario.dniUsuario}
                           >
-                            {usuario.dniUsuario} -{usuario.nombreUsuario}{" "}{usuario.apellido1}{" "}{usuario.apellido2}
+                            {usuario.dniUsuario} -{usuario.nombreUsuario}{" "}
+                            {usuario.apellido1} {usuario.apellido2}
                           </option>
                         ))}
                       </Form.Control>
