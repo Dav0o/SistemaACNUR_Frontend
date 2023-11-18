@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const api = axios.create({
-    baseURL: 'https://localhost:7289/api/'
+    baseURL: 'https://gd2fwccv-7289.use2.devtunnels.ms/api/'
 });
 
 export default api;

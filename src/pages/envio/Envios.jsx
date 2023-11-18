@@ -608,6 +608,9 @@ function Envios() {
                   <strong>Unidad de Medida:</strong>{" "}
                   {selectedEnvio.unidadMedidaId}
                 </div>
+                <div style={{ marginBottom: "20px" }}>
+                  <strong>Id:</strong> {selectedEnvio.idEnvio}
+                </div>
               </div>
             </div>
           )}
