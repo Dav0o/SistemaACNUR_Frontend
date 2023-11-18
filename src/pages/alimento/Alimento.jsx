@@ -118,34 +118,34 @@ function Alimento() {
 
   //////////////////////----------delete------------///////////////////////////7
 
-  const handleDelete = (alimentoId) => {
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminarlo",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        api
-          .delete(`Alimentos?Id=${alimentoId}`)
-          .then((response) => {
-            console.log(response);
-            // Actualiza la lista de alimentos
-            const updatedAlimentos = alimentos.filter(
-              (alimento) => alimento.idAlimento !== alimentoId
-            );
-            setAlimentos(updatedAlimentos);
-          })
-          .catch((error) => {
-            console.error("Error al eliminar el alimento:", error);
-          });
-      }
-    });
-  };
+  // const handleDelete = (alimentoId) => {
+  //   Swal.fire({
+  //     title: "¿Estás seguro?",
+  //     text: "¡No podrás revertir esto!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#d33",
+  //     cancelButtonColor: "#3085d6",
+  //     confirmButtonText: "Sí, eliminarlo",
+  //     cancelButtonText: "Cancelar",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       api
+  //         .delete(`Alimentos?Id=${alimentoId}`)
+  //         .then((response) => {
+  //           console.log(response);
+  //           // Actualiza la lista de alimentos
+  //           const updatedAlimentos = alimentos.filter(
+  //             (alimento) => alimento.idAlimento !== alimentoId
+  //           );
+  //           setAlimentos(updatedAlimentos);
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error al eliminar el alimento:", error);
+  //         });
+  //     }
+  //   });
+  // };
   ///////////////////---------------------------------//////////////////////////////
 
   ///////////////////---------------Details-------------//////////////////////////////
@@ -250,12 +250,12 @@ function Alimento() {
                     >
                      <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button>{" "}
-                    <Button
+                    {/* <Button
                       variant="danger"
                       onClick={() => handleDelete(alimento.idAlimento)}
                     >
                      <FontAwesomeIcon icon={faTrash} /> Eliminar
-                    </Button>{" "}
+                    </Button>{" "} */}
                     <Button
                       variant="info"
                       className="text-white"

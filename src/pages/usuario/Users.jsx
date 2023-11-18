@@ -8,7 +8,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Modal from "react-bootstrap/Modal";
 import Accordion from "react-bootstrap/Accordion";
-import UsuarioRol from "./components/UsuarioRol";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUserDoctor,
@@ -19,6 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import api from "../../api/axios";
 import { useRef } from "react";
+import Swal from "sweetalert2";
 
 function Users() {
   const [showModal, setShowModal] = useState(false);
@@ -41,12 +41,54 @@ function Users() {
   const [rols, setRols] = useState([]);
   const [usuarioRols, setUsuarioRols] = useState([]);
   const [editingUsuario, setEditingUsuario] = useState(null);
-  /* const [selectedRoles, setSelectedRoles] = useState(null); */
+  const [selectedRoles, setSelectedRoles] = useState([]);
+
+  
 
   const handleShowModal = (user) => {
     setSelectedUser(user);
+    setSelectedRoles([]);
     setShowModal(true);
   };
+
+  const handleRoleChange = (roleId) => {
+    const roles = [...selectedRoles];
+  
+    if (roles.includes(roleId)) {
+      // Si ya está seleccionado, quítalo
+      roles.splice(roles.indexOf(roleId), 1);
+    } else {
+      // Si no está seleccionado, agrégalo
+      roles.push(roleId);
+    }
+  
+    setSelectedRoles(roles);
+  };
+
+  const handleSaveRoles = () => {
+    const rolesData = selectedRoles.map((roleId) => ({
+      usuarioDni: selectedUser.dniUsuario,
+      rolId: roleId,
+    }));
+
+    console.log(rolesData);
+
+    rolesData.forEach((rol) => {
+      api
+        .post("UsuarioRols", rol)
+        .then((response) => {
+          console.log(response);
+          setShowModal(false);
+          setRefresh(!refresh);
+        })
+        .catch((error) => {
+          console.error("Error al asignar roles:", error);
+        });
+    });
+  };
+  
+  
+  
 
   const handleHideModal = () => {
     setShowModal(false);
@@ -96,6 +138,7 @@ function Users() {
   }, [refresh]);
 
   const handleSave = () => {
+    
     let newUser = {
       dniUsuario: dniUsuario.current.value,
       nombreUsuario: nombreUsuario.current.value,
@@ -107,15 +150,37 @@ function Users() {
       direccion: direccion.current.value,
       sedeId: sedeId.current.value,
     };
-
+  
     api
       .post("Usuario", newUser)
       .then((response) => {
         console.log(response);
+        dniUsuario.current.value = 0;
+        nombreUsuario.current.value = "";
+        apellido1.current.value = "";
+        apellido2.current.value = "";
+        correo.current.value = "";
+        clave.current.value = "";
+        telefono.current.value = 0;
+        direccion.current.value = "";
+        sedeId.current.value = "";
+  
         setRefresh(!refresh);
+  
+        Swal.fire(
+          'Éxitosamente',
+          'Usuario ha sido guardado.',
+          'success'
+        )
       })
       .catch((error) => {
         console.log("Nuestro JSON: ", newUser, "EL ERROR: ", error);
+  
+        Swal.fire(
+          'Error!',
+          'Ha habido un error al guardar el usuario, revisa la informacion digitada!.',
+          'error'
+        )
       });
   };
 
@@ -184,6 +249,7 @@ function Users() {
     return joinedData;
   }
 
+  
 
 
   return (
@@ -356,26 +422,31 @@ function Users() {
           <FontAwesomeIcon icon={faHandHoldingDollar} /> Socios
         </Button>
         <Modal show={showModal} onHide={handleHideModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>Definir rol al usuario</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            {selectedUser ? (
-              <UsuarioRol
-                user={selectedUser}
-                joinedUser={joinTablesForUsuario(selectedUser)}
-                /* onSaveRoles={saveRoles} */
-              />
-            ) : (
-              <div>No hay usuario seleccionado</div>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={handleHideModal}>
-              Guardar
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      <Modal.Header closeButton>
+        <Modal.Title>Definir rol al usuario</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+  <Form>
+    {rols.map((rol) => (
+      <Form.Check
+        key={rol.idRol}
+        type="checkbox"
+        id={`checkbox-${rol.idRol}`}
+        label={rol.nombreRol}
+        checked={selectedRoles.includes(rol.idRol)}
+        onChange={() => handleRoleChange(rol.idRol)}
+      />
+    ))}
+  </Form>
+</Modal.Body>
+<Modal.Footer>
+  <Button variant="primary" onClick={handleSaveRoles}>
+    Guardar
+  </Button>
+</Modal.Footer>
+
+    </Modal>
+
         <Modal
           show={showEditModal}
           onHide={handleCloseEditModal}

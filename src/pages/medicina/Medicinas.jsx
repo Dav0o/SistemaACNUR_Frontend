@@ -112,34 +112,34 @@ function Medicinas() {
 
   //////////////////////----------delete------------///////////////////////////7
 
-  const handleDelete = (medicinaId) => {
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "¡No podrás revertir esto!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        api
-          .delete(`Medicinas?Id=${medicinaId}`)
-          .then((response) => {
-            console.log(response);
+  // const handleDelete = (medicinaId) => {
+  //   Swal.fire({
+  //     title: "¿Estás seguro?",
+  //     text: "¡No podrás revertir esto!",
+  //     icon: "warning",
+  //     showCancelButton: true,
+  //     confirmButtonColor: "#d33",
+  //     cancelButtonColor: "#3085d6",
+  //     confirmButtonText: "Sí, eliminar",
+  //     cancelButtonText: "Cancelar",
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       api
+  //         .delete(`Medicinas?Id=${medicinaId}`)
+  //         .then((response) => {
+  //           console.log(response);
 
-            const updatedMedicinas = medicinas.filter(
-              (medicina) => medicina.idMedicina !== medicinaId
-            );
-            setMedicinas(updatedMedicinas);
-          })
-          .catch((error) => {
-            console.error("Error al eliminar la medicina:", error);
-          });
-      }
-    });
-  };
+  //           const updatedMedicinas = medicinas.filter(
+  //             (medicina) => medicina.idMedicina !== medicinaId
+  //           );
+  //           setMedicinas(updatedMedicinas);
+  //         })
+  //         .catch((error) => {
+  //           console.error("Error al eliminar la medicina:", error);
+  //         });
+  //     }
+  //   });
+  // };
   ///////////////////---------------------------------//////////////////////////////
 
   ///////////////////---------------Details-------------//////////////////////////////
@@ -234,12 +234,12 @@ function Medicinas() {
                     >
                    <FontAwesomeIcon icon={faPenToSquare} /> Actualizar
                     </Button>{" "}
-                    <Button
+                    {/* <Button
                       variant="danger"
                       onClick={() => handleDelete(medicina.idMedicina)}
                     >
                       <FontAwesomeIcon icon={faTrash} /> Eliminar
-                    </Button>{" "}
+                    </Button>{" "} */}
                     <Button
                       variant="info"
                       className="text-white"
